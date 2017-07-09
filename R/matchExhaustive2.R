@@ -2,10 +2,14 @@ matchExhaustive2 <- function(x, Cs, ws, silence = FALSE) {
     numS = length(Cs)
     
     ws2 <- ws[ws != 0]
-    x2 <- lapply(x, function(m) m[, ws != 0])
     
-    corPre = prepareMCC(x2, Cs)
-    
+    corPre = prepareMCC(x, Cs)
+    corPre2 <- corPre
+	for(s in 1:length(corPre2)){
+		corPre2[[i]]$MeanInd <- corPre2[[i]]$MeanInd[,ws2]
+		corPre2[[i]]$denInd <- corPre2[[i]]$denInd[ws2]
+	}
+		
     S <- length(corPre)
     G <- length(ws)
     
