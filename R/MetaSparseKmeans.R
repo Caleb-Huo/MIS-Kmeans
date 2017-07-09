@@ -30,7 +30,6 @@
 ##' maxiter specifies the max number of iteration for MetaSparseKmeans
 ##' @param lambda A tuning parameter controlling the balance between separation ability (BCSS/TSS) and matching function.
 ##' lambda is set to be 1/2 by default.
-##' @param method There are three methods for matching clusters.
 ##' 1, exhaustive. 2, linear. 3, MCMC.
 ##' exhaustive will perform exhaustive search and it has 100 percent accurate but very time consuming if the configuration space is too large.
 ##' linear will perform stepwise search. The searching is very efficient but yield less accurate if the data is noisy.
@@ -197,11 +196,11 @@
 ##' plot(res$ws,main='metaSparseKmeans weight dist',xlab='geneIndex')
 ##'
 MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 1, maxiter = 20, lambda = 1/2, 
-    method = "exhaustive", sampleSizeAdjust = FALSE, wsPre = NULL, silence = FALSE) {
+    sampleSizeAdjust = FALSE, wsPre = NULL, silence = FALSE) {
     # x is list of data, (nxp) for each study wbounds is a vector of L1 constraints on w, of the form
     # sum(abs(w))<=wbounds[i] nstart: initial Kmeans searching space.  maxiter: maximum number of iterations.
-    # lambda: a tuning parameter keeping the balance between separation and matching method: contains
-    # exhaustive, linear exhaustive and linear exhaustive + simulated anealling.  wsPre: if specified, the
+    # lambda: a tuning parameter keeping the balance between separation and  
+	# wsPre: if specified, the
     # initial weight.  silence: if print some details
     
     ## check input
@@ -266,7 +265,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                 if (niter > 1) 
                   Cs <- UpdateCs(x, K, ws, Cs, nstart = nstart, tss.x)  # if niter=1, no need to update!!
                 
-                fmatch = patternMatch(x, Cs, ws, method = method, silence = silence)
+                fmatch = patternMatch(x, Cs, ws, silence = silence)
                 ratio = GetRatio(x, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
                 ws <- UpdateWs(x, Cs, awbound, ratio, lambda * (fmatch$perEng + 1)/2)
                 store.ratio <- c(store.ratio, sum(ratio * ws))

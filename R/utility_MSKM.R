@@ -210,11 +210,11 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
     
     corPre = prepareMCC(x, Cs)
     corPre2 <- corPre
-	for(s in 1:length(corPre2)){
-		corPre2[[s]]$MeanInd <- corPre2[[s]]$MeanInd[,ws != 0]
-		corPre2[[s]]$denInd <- corPre2[[s]]$denInd[ws != 0]
-	}
-		
+    for (s in 1:length(corPre2)) {
+        corPre2[[s]]$MeanInd <- corPre2[[s]]$MeanInd[, ws != 0]
+        corPre2[[s]]$denInd <- corPre2[[s]]$denInd[ws != 0]
+    }
+    
     S <- length(corPre)
     G <- length(ws)
     
@@ -296,7 +296,7 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
         }
         
         tmpEng <- iniEnergy[S - 1] + interEnergy
-        #print(tmpEng/choose(S, 2))
+        # print(tmpEng/choose(S, 2))
         if (tmpEng > highEng) {
             highEng = tmpEng
             resCs = tmpCs
