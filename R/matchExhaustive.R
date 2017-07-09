@@ -29,7 +29,7 @@ matchExhaustive <- function(x, Cs, ws, silence = FALSE) {
         combFlag = tmpCombFlag
         permFlag = tmpPermFlag
         tmpEng = eng_cor_total(corPre = corPre, reduCs = tmpReduCs, ws = ws)
-        print(tmpEng)
+        #print(tmpEng)
         
         if (tmpEng > highEng) {
             highEng = tmpEng

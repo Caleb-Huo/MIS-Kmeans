@@ -5,7 +5,6 @@ matchExhaustive2 <- function(x, Cs, ws, silence = FALSE) {
     x2 <- lapply(x, function(m) m[, ws != 0])
     
     corPre = prepareMCC(x2, Cs)
-    reduCs <- lapply(Cs, unique)
     
     S <- length(corPre)
     G <- length(ws)
@@ -88,7 +87,7 @@ matchExhaustive2 <- function(x, Cs, ws, silence = FALSE) {
         }
         
         tmpEng <- iniEnergy[S - 1] + interEnergy
-        print(tmpEng/choose(S, 2))
+        #print(tmpEng/choose(S, 2))
         if (tmpEng > highEng) {
             highEng = tmpEng
             resCs = tmpCs
