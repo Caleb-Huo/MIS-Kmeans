@@ -45,7 +45,7 @@ matchLinear <- function(x, Cs, ws, silence = FALSE) {
     }
     
     #################### stop here
-    perEng = eng_cor_per(corPre = corPre, reduCs = resCs, ws = ws)
+    perEng = eng_cor_per(corPre = corPre, reduCs = resCs)
     resumeCs = Cs
     for (s in 1:numS) {
         resumeCs[[s]] = reorderLabel(Cs[[s]], resCs[[s]])
