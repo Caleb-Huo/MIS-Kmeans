@@ -6,8 +6,8 @@ matchExhaustive2 <- function(x, Cs, ws, silence = FALSE) {
     corPre = prepareMCC(x, Cs)
     corPre2 <- corPre
 	for(s in 1:length(corPre2)){
-		corPre2[[i]]$MeanInd <- corPre2[[i]]$MeanInd[,ws2]
-		corPre2[[i]]$denInd <- corPre2[[i]]$denInd[ws2]
+		corPre2[[s]]$MeanInd <- corPre2[[s]]$MeanInd[,ws2]
+		corPre2[[s]]$denInd <- corPre2[[s]]$denInd[ws2]
 	}
 		
     S <- length(corPre)
