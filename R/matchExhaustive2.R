@@ -6,8 +6,8 @@ matchExhaustive2 <- function(x, Cs, ws, silence = FALSE) {
     corPre = prepareMCC(x, Cs)
     corPre2 <- corPre
 	for(s in 1:length(corPre2)){
-		corPre2[[s]]$MeanInd <- corPre2[[s]]$MeanInd[,ws2]
-		corPre2[[s]]$denInd <- corPre2[[s]]$denInd[ws2]
+		corPre2[[s]]$MeanInd <- corPre2[[s]]$MeanInd[,ws != 0]
+		corPre2[[s]]$denInd <- corPre2[[s]]$denInd[ws != 0]
 	}
 		
     S <- length(corPre)
@@ -27,8 +27,8 @@ matchExhaustive2 <- function(x, Cs, ws, silence = FALSE) {
         index_a <- CombS[[i]][1]
         index_b <- CombS[[i]][2]
         
-        corPre_a <- corPre[[index_a]]
-        corPre_b <- corPre[[index_b]]
+        corPre_a <- corPre2[[index_a]]
+        corPre_b <- corPre2[[index_b]]
         
         energyK <- replicate(length(permK), list())
         for (j in seq_along(permK)) {
