@@ -3,6 +3,8 @@ Github repository for MIS-Kmeans
 
 ## Required Package
 * sparcl
+* hash
+* combinat
 
 ## Install This Package from github
 First you need R `devtools` package installed.

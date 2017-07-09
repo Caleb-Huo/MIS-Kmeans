@@ -3,7 +3,7 @@
 ##' nothing at this moment
 ##' @title Calculate Gap statistics
 ##' @param S Input multiple studies.
-##' Same format as the input for MetaSpaKmeans fucntion.
+##' Same format as the input for MetaSparseKmeans fucntion.
 ##' @param K Number of clusters
 ##' @param B Permutation number.
 ##' @param wbounds Tuning parameter. Again is could be a number or a vector.
@@ -138,12 +138,12 @@
 ##'
 ##' B <- 2
 ##'
-##' gapStatResult <- calculateGap(S,K=3,B=2)
+##' gapStatResult <- gapStat_MSKM(S,K=3,B=2)
 ##' plot(gapStatResult$wbounds,gapStatResult$gapStat,type='b',xlab='mu',ylab='gapStat') 
 ##' arrows(gapStatResult$wbounds, gapStatResult$gapStat-gapStatResult$se.score, gapStatResult$wbounds, gapStatResult$gapStat+gapStatResult$se.score, length=0.05, angle=90, code=3)
 ##'
 ##'
-calculateGap <- function(S, K = 3, B = 10, wbounds = NULL, nvals = 10, silence = FALSE) {
+gapStat_MSKM <- function(S, K = 3, B = 10, wbounds = NULL, nvals = 10, silence = FALSE) {
     if (B != (B. <- as.integer(B)) || (B <- B.) <= 0) 
         stop("'B' has to be a positive integer")
     if (is.null(wbounds)) 
@@ -155,7 +155,7 @@ calculateGap <- function(S, K = 3, B = 10, wbounds = NULL, nvals = 10, silence =
     
     ## get true objective score
     set.seed(15213)
-    tmpres <- MetaSpaKmeans(x = S, K = K, wbounds = wbounds, silence = TRUE)
+    tmpres <- MetaSparseKmeans(x = S, K = K, wbounds = wbounds, silence = TRUE)
     score <- sapply(tmpres, function(x) x$score)
     
     E.score.full <- NULL
@@ -169,7 +169,7 @@ calculateGap <- function(S, K = 3, B = 10, wbounds = NULL, nvals = 10, silence =
         
         set.seed(15213 + b)
         ax = permuteX(S)
-        tmpres = MetaSpaKmeans(x = ax, K = K, wbounds = wbounds, silence = TRUE)
+        tmpres = MetaSparseKmeans(x = ax, K = K, wbounds = wbounds, silence = TRUE)
         ascore = sapply(tmpres, function(x) x$score)
         E.score.full <- rbind(E.score.full, ascore)
     }

@@ -185,7 +185,7 @@
 ##'
 ##' ## perform meta sparse Kmeans
 ##'
-##' res = MetaSpaKmeans(x=S,K=3,wbounds=10,lambda=2)
+##' res = MetaSparseKmeans(x=S,K=3,wbounds=10,lambda=2)
 ##'
 ##' ## visualize the result
 ##'
@@ -196,7 +196,7 @@
 ##'
 ##' plot(res$ws,main='metaSparseKmeans weight dist',xlab='geneIndex')
 ##'
-MetaSpaKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 1, maxiter = 20, lambda = 1/2, 
+MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 1, maxiter = 20, lambda = 1/2, 
     method = "exhaustive", sampleSizeAdjust = FALSE, wsPre = NULL, silence = FALSE) {
     # x is list of data, (nxp) for each study wbounds is a vector of L1 constraints on w, of the form
     # sum(abs(w))<=wbounds[i] nstart: initial Kmeans searching space.  maxiter: maximum number of iterations.
