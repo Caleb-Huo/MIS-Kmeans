@@ -130,8 +130,7 @@ weightedKMeans <- function(x, K, ws, tss.x = NULL) {
     return(newCs)
 }
 
-
-UpdateCs <- function(x, K, ws, Cs, nstart = nstart, tss.x) {
+UpdateCs <- function(x, K, ws, Cs, tss.x, nstart = nstart) {
     newCs <- list()
     for (i in 1:length(x)) {
         x[[i]] <- x[[i]][, ws != 0]

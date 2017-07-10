@@ -5,8 +5,8 @@
 \title{Main function to perform MetaSparseKmeans.}
 \usage{
 MetaSparseKmeans(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 1,
-  maxiter = 20, lambda = 1/2, method = "exhaustive",
-  sampleSizeAdjust = FALSE, wsPre = NULL, silence = FALSE)
+  maxiter = 20, lambda = 1/2, sampleSizeAdjust = FALSE, wsPre = NULL,
+  silence = FALSE)
 }
 \arguments{
 \item{x}{A list for several microarray studies.
@@ -39,9 +39,7 @@ The result with the best objective score will be used.}
 maxiter specifies the max number of iteration for MetaSparseKmeans}
 
 \item{lambda}{A tuning parameter controlling the balance between separation ability (BCSS/TSS) and matching function.
-lambda is set to be 1/2 by default.}
-
-\item{method}{There are three methods for matching clusters.
+lambda is set to be 1/2 by default.
 1, exhaustive. 2, linear. 3, MCMC.
 exhaustive will perform exhaustive search and it has 100 percent accurate but very time consuming if the configuration space is too large.
 linear will perform stepwise search. The searching is very efficient but yield less accurate if the data is noisy.

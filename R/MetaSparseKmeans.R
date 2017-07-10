@@ -199,9 +199,8 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
     sampleSizeAdjust = FALSE, wsPre = NULL, silence = FALSE) {
     # x is list of data, (nxp) for each study wbounds is a vector of L1 constraints on w, of the form
     # sum(abs(w))<=wbounds[i] nstart: initial Kmeans searching space.  maxiter: maximum number of iterations.
-    # lambda: a tuning parameter keeping the balance between separation and  
-	# wsPre: if specified, the
-    # initial weight.  silence: if print some details
+    # lambda: a tuning parameter keeping the balance between separation and wsPre: if specified, the initial
+    # weight.  silence: if print some details
     
     ## check input
     
@@ -251,6 +250,16 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
             
             ## iterate until converge or maxiteration
             while ((sum(abs(ws - ws.old))/sum(abs(ws.old))) > 1e-04 && niter < maxiter) {
+                niter <- niter + 1
+                ws.old <- ws
+                if (niter > 1) 
+                  Cs <- UpdateCs(x, K, ws, Cs, tss.x, nstart = nstart)  # if niter=1, no need to update!!
+                
+                fmatch = patternMatch(x, Cs, ws, silence = silence)
+                ratio = GetRatio(x, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
+                ws <- UpdateWs(x, Cs, awbound, ratio, lambda * (fmatch$perEng + 1)/2)
+                store.ratio <- c(store.ratio, sum(ratio * ws))
+                
                 if (!silence) {
                   cat("iteration:")
                   cat(niter)
@@ -259,16 +268,6 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                   cat(sum(abs(ws - ws.old))/sum(abs(ws.old)))
                   cat("\n")
                 }
-                
-                niter <- niter + 1
-                ws.old <- ws
-                if (niter > 1) 
-                  Cs <- UpdateCs(x, K, ws, Cs, nstart = nstart, tss.x)  # if niter=1, no need to update!!
-                
-                fmatch = patternMatch(x, Cs, ws, silence = silence)
-                ratio = GetRatio(x, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
-                ws <- UpdateWs(x, Cs, awbound, ratio, lambda * (fmatch$perEng + 1)/2)
-                store.ratio <- c(store.ratio, sum(ratio * ws))
                 
             }
             score = sum((ratio + lambda * (fmatch$perEng + 1)/2) * ws)
