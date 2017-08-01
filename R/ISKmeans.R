@@ -58,18 +58,19 @@
 ##'
 ##' iRes <- ISKmeans(d, K=3, gamma=0.5, alpha=0.5, group=group)
 ##'
-ISKmeans <- function(d, K = NULL, gamma = NULL, alpha = 0.5, group = NULL, nstart = 20, wsPre = NULL, penaltyInfo = NULL, 
-    sparseStart = TRUE, silent = FALSE, maxiter = 20) {
-    # The criterion is : minimize_{w, C} sum_j w_j (R_j) + gamma_1*\sum_group penalty + gamma_2*||w||_1 s.t.
-    # ||w||_2=1, w_j>=0 x is the data, nxp K is the number of clusters desired gamma is tuning parameter
-    # controlling number of selected features. Larger gamma will decrease total number of genes.  alpha is ratio
-    # between individual penalty and group penalty. alpha=1 means there only exist individual penalty.  rho is
-    # initial value for ADMM, should be omitted later group is the overlapping group information. Data structure
-    # of module should be a list. Each element of the list represents a group, which contains feature index
-    # information.
+ISKmeans <- function(d, K = NULL, gamma = NULL, alpha = 0.5, group = NULL, nstart = 20, 
+    wsPre = NULL, penaltyInfo = NULL, sparseStart = TRUE, silent = FALSE, maxiter = 20) {
+    # The criterion is : minimize_{w, C} sum_j w_j (R_j) + gamma_1*\sum_group penalty +
+    # gamma_2*||w||_1 s.t.  ||w||_2=1, w_j>=0 x is the data, nxp K is the number of clusters
+    # desired gamma is tuning parameter controlling number of selected features. Larger
+    # gamma will decrease total number of genes.  alpha is ratio between individual penalty
+    # and group penalty. alpha=1 means there only exist individual penalty.  rho is initial
+    # value for ADMM, should be omitted later group is the overlapping group information.
+    # Data structure of module should be a list. Each element of the list represents a
+    # group, which contains feature index information.
     
-    ## check the input variables are complete.  wbounds is a vector of L1 constraints on w, of the form
-    ## sum(abs(w))<=wbounds[i]
+    ## check the input variables are complete.  wbounds is a vector of L1 constraints on w,
+    ## of the form sum(abs(w))<=wbounds[i]
     if (!is.null(penaltyInfo)) {
         if (!(length(gamma) == length(penaltyInfo))) {
             stop("gamma and penaltyInfo must have the same length.")
@@ -110,7 +111,8 @@ ISKmeans <- function(d, K = NULL, gamma = NULL, alpha = 0.5, group = NULL, nstar
             ADMMobjectIni <- updateISKmeans(d, K, groupInfoIni, Cs, wsPre, tss.x)
             cat("initilizaing groups\n")
             groupInfo <- prepareGroup(group, J, G0, agamma, alpha, ADMMobjectIni$ws)
-            ADMMobject <- updateISKmeans(d, K, groupInfo, ADMMobjectIni$Cs, ADMMobjectIni$ws, tss.x)
+            ADMMobject <- updateISKmeans(d, K, groupInfo, ADMMobjectIni$Cs, ADMMobjectIni$ws, 
+                tss.x)
         } else {
             cat("using defined groups\n")
             groupInfo <- penaltyInfo[[i]]

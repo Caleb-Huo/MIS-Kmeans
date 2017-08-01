@@ -164,4 +164,3 @@ arrows(gapStatResult$wbounds, gapStatResult$gapStat-gapStatResult$se.score, gapS
 \author{
 Zhiguang Huo
 }
-

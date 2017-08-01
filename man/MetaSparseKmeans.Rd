@@ -221,4 +221,3 @@ plot(res$ws,main='metaSparseKmeans weight dist',xlab='geneIndex')
 \author{
 Zhiguang Huo
 }
-

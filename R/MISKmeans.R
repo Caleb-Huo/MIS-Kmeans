@@ -1,6 +1,6 @@
 ##' @export
-MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, group = NULL, nstart = 20, wsPre = NULL, 
-    penaltyInfo = NULL, silent = FALSE, maxiter = 20, sampleSizeAdjust = FALSE) {
+MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, group = NULL, 
+    nstart = 20, wsPre = NULL, penaltyInfo = NULL, silent = FALSE, maxiter = 20, sampleSizeAdjust = FALSE) {
     
     if (!is.null(penaltyInfo)) {
         if (!(length(gamma) == length(penaltyInfo))) {
@@ -34,11 +34,12 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
         if (is.null(penaltyInfo)) {
             cat("initilizaing results using alpha = 1\n")
             groupInfoIni <- prepareGroup(group, J, G0, agamma, 1, wsPre)
-            ADMMobjectIni <- updateMISKmeans(d, K, groupInfoIni, Cs, wsPre, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
+            ADMMobjectIni <- updateMISKmeans(d, K, groupInfoIni, Cs, wsPre, tss.x, lambda, 
+                sampleSizeAdjust = sampleSizeAdjust)
             cat("initilizaing groups\n")
             groupInfo <- prepareGroup(group, J, G0, agamma, alpha, ADMMobjectIni$ws)
-            ADMMobject <- updateMISKmeans(d, K, groupInfo, ADMMobjectIni$Cs, ADMMobjectIni$ws, tss.x, lambda, 
-                sampleSizeAdjust = sampleSizeAdjust)
+            ADMMobject <- updateMISKmeans(d, K, groupInfo, ADMMobjectIni$Cs, ADMMobjectIni$ws, 
+                tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
             # Map(adjustedRandIndex, ADMMobject$Cs, label)
         } else {
             cat("using defined groups\n")

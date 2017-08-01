@@ -86,4 +86,3 @@ iRes <- ISKmeans(d, K=3, gamma=0.5, alpha=0.5, group=group)
 \author{
 Caleb
 }
-

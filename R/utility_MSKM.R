@@ -99,7 +99,8 @@ eng_cor_per <- function(corPre, reduCs) {
     for (i in 1:ncol(reduXComb)) {
         index1 = reduXComb[, i][1]
         index2 = reduXComb[, i][2]
-        perEng = perEng + eng_MCC_pair(corPre[[index1]], corPre[[index2]], reduCs[[index1]], reduCs[[index2]])
+        perEng = perEng + eng_MCC_pair(corPre[[index1]], corPre[[index2]], reduCs[[index1]], 
+            reduCs[[index2]])
     }
     ## scale to comparable with bcss/tss
     return(perEng/choose(length(corPre), 2))
@@ -183,8 +184,8 @@ GetRatio <- function(x, Cs, tss.x, sampleSizeAdjust = FALSE) {
         for (k in unique(Cs[[i]])) {
             whichers <- (Cs[[i]] == k)
             if (sum(whichers) > 1) 
-                wcss.perfeature <- wcss.perfeature + apply(scale(x[[i]][whichers, ], center = TRUE, scale = FALSE)^2, 
-                  2, sum)
+                wcss.perfeature <- wcss.perfeature + apply(scale(x[[i]][whichers, ], center = TRUE, 
+                  scale = FALSE)^2, 2, sum)
         }
         aratio <- numeric(ncol(x[[1]]))
         bcss.perfeature = tss.perfeature - wcss.perfeature
@@ -223,8 +224,6 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
     K <- length(unique(Cs[[1]]))
     
     permK <- permn(K)
-    encodeK <- sapply(permK, encode, K)
-    
     
     energyS <- replicate(length(CombS), list())
     for (i in seq_along(CombS)) {
@@ -234,11 +233,19 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
         corPre_a <- corPre2[[index_a]]
         corPre_b <- corPre2[[index_b]]
         
-        energyK <- replicate(length(permK), list())
-        for (j in seq_along(permK)) {
-            bRank <- permK[[j]]
-            energyK[[j]] <- sum(eng_MCC_pair(corPre_a, corPre_b, 1:K, bRank) * ws2)
+        energyK <- replicate(length(permK)^2, list())
+        encodeK0 <- replicate(length(permK)^2, list())
+        for (j1 in seq_along(permK)) {
+            aRank <- permK[[j1]]
+            for (j2 in seq_along(permK)) {
+                bRank <- permK[[j2]]
+                energyK[[j2 + (j1 - 1) * length(permK)]] <- sum(eng_MCC_pair(corPre_a, corPre_b, 
+                  aRank, bRank) * ws2)
+                encodeK0[[j2 + (j1 - 1) * length(permK)]] <- c(aRank, bRank)
+            }
         }
+        encodeK <- sapply(encodeK0, encode, K)
+        
         ahashK <- hash(encodeK, energyK)
         energyS[[i]] <- ahashK
     }
@@ -263,15 +270,9 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
         if (s > 1) {
             interEnergy <- 0
             for (ps in 1:(s - 1)) {
-                ps_order <- order(tmpCs[[ps]])
-                Cs_ps <- tmpCs[[ps]][ps_order]
                 aSencode <- as.character(encode(c(ps, s), S))
-                
-                Cs_s <- tmpCs[[s]][ps_order]
-                aKencode <- as.character(encode(Cs_s, K))
-                
+                aKencode <- as.character(encode(c(tmpCs[[ps]], tmpCs[[s]]), K))
                 interEnergy <- interEnergy + hashS[[aSencode]][[aKencode]]
-                
             }
             iniEnergy[s] <- iniEnergy[s - 1] + interEnergy
         }
@@ -281,28 +282,20 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
     
     while (permFlag[1] == 1) {
         
-        tmpCs[[S]] <- permRule[[S]][[permFlag[[S]]]]
-        
-        interEnergy <- 0
-        for (ps in 1:(S - 1)) {
-            ps_order <- order(tmpCs[[ps]])
-            Cs_ps <- tmpCs[[ps]][ps_order]
-            aSencode <- as.character(encode(c(ps, S), S))
-            
-            Cs_s <- tmpCs[[S]][ps_order]
-            aKencode <- as.character(encode(Cs_s, K))
-            interEnergy <- interEnergy + hashS[[aSencode]][[aKencode]]
-        }
-        
-        tmpEng <- iniEnergy[S - 1] + interEnergy
-        # print(tmpEng/choose(S, 2))
+        tmpEng <- iniEnergy[S]
+        print(tmpEng/choose(S, 2))
         if (tmpEng > highEng) {
             highEng = tmpEng
             resCs = tmpCs
         }
+        
+        # eng_cor_total(corPre, reduCs = tmpCs, ws = ws) eng_cor_total(corPre2, reduCs = tmpCs,
+        # ws = ws2)
+        
         permFlag[[S]] = permFlag[[S]] + 1
         
         updateFlag <- rep(0, S)
+        updateFlag[S] <- 1
         for (s in S:2) {
             if (permFlag[[s]] > permEndFlag[[s]]) {
                 permFlag[[s]] = 1
@@ -313,24 +306,22 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
             }
         }
         
-        for (s in S:2) {
+        for (s in 2:S) {
             if (updateFlag[s] == 1) {
                 tmpCs[[s]] <- permRule[[s]][[permFlag[[s]]]]
                 
                 interEnergy <- 0
                 for (ps in 1:(s - 1)) {
-                  ps_order <- order(tmpCs[[ps]])
-                  Cs_ps <- tmpCs[[ps]][ps_order]
                   aSencode <- as.character(encode(c(ps, s), S))
-                  
-                  Cs_s <- tmpCs[[s]][ps_order]
-                  aKencode <- as.character(encode(Cs_s, K))
+                  aKencode <- as.character(encode(c(tmpCs[[ps]], tmpCs[[s]]), K))
                   interEnergy <- interEnergy + hashS[[aSencode]][[aKencode]]
                 }
                 
-                iniEnergy[s:S] <- iniEnergy[s:S] + interEnergy - iniEnergy[s] + iniEnergy[s - 1]
+                iniEnergy[s:S] <- iniEnergy[s:S] + interEnergy - iniEnergy[s] + iniEnergy[s - 
+                  1]
             }
         }
+        # print(iniEnergy/3)
     }
     
     
@@ -344,4 +335,94 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
     return(list(matchCs = resumeCs, highEng = highEng, perEng = perEng))
 }
 
-
+if (F) {
+    
+    patternMatch_old <- function(x, Cs, ws, silence = FALSE) {
+        numS = length(Cs)
+        corPre = prepareMCC(x, Cs)
+        lenCs = vector("numeric", numS)
+        uniCs = vector("list", numS)
+        
+        for (s in 1:numS) {
+            uniCs[[s]] = unique(Cs[[s]])
+            lenCs[s] = length(uniCs[[s]])
+        }
+        resCs = lapply(uniCs, sort)  ## result Cluster label, start form 12345, then exhausive search
+        
+        ## how to calculate energy, resCs specify matching rule
+        highEng = eng_cor_total(corPre, reduCs = resCs, ws = ws)
+        
+        ### exhaustive search start here
+        stdMatch = 1:lenCs[1]
+        combRule = lapply(lenCs, function(x) as.matrix(combn(stdMatch, x)))
+        permRule = lapply(lenCs, permn)
+        combFlag = rep(1, numS)
+        permFlag = rep(1, numS)
+        combEndFlag = sapply(combRule, ncol)
+        permEndFlag = sapply(permRule, listLength)
+        tmpCombFlag = combFlag
+        tmpPermFlag = permFlag
+        tmpReduCs = resCs
+        trace = highEng
+        while (tmpPermFlag[1] == 1) {
+            combFlag = tmpCombFlag
+            permFlag = tmpPermFlag
+            tmpEng = eng_cor_total(corPre = corPre, reduCs = tmpReduCs, ws = ws)
+            print(tmpEng)
+            
+            if (tmpEng > highEng) {
+                highEng = tmpEng
+                resCs = tmpReduCs
+            }
+            if (!silence) 
+                # print(highEng)
+            trace = c(trace, highEng)
+            tmpPermFlag[[length(Cs)]] = tmpPermFlag[[length(Cs)]] + 1
+            for (s in length(Cs):2) {
+                if (tmpPermFlag[[s]] > permEndFlag[[s]]) {
+                  tmpPermFlag[[s]] = 1
+                  tmpCombFlag[[s]] = tmpCombFlag[[s]] + 1
+                  if (tmpCombFlag[[s]] > combEndFlag[[s]]) {
+                    tmpCombFlag[[s]] = 1
+                    tmpPermFlag[[s - 1]] = tmpPermFlag[[s - 1]] + 1
+                  }
+                }
+                tmpOrder = combRule[[s]][, tmpCombFlag[[s]]][permRule[[s]][[tmpPermFlag[s]]]]
+                tmpReduCs[[s]] = reorderLabel(resCs[[s]], tmpOrder)
+            }
+        }
+        
+        #################### stop here
+        perEng = eng_cor_per(corPre = corPre, reduCs = resCs)
+        resumeCs = Cs
+        for (s in 1:numS) {
+            resumeCs[[s]] = reorderLabel(Cs[[s]], resCs[[s]])
+        }
+        ## return resumed matching Cs, high energy, energy per gene, trace
+        return(list(matchCs = resumeCs, highEng = highEng, perEng = perEng))
+    }
+    
+    
+    eng_cor_total <- function(corPre, reduCs, ws) {
+        non0ws = ws != 0
+        perEng = vector("numeric", sum(non0ws))
+        
+        numS = length(corPre)
+        for (i in 1:numS) {
+            corPre[[i]]$MeanInd = corPre[[i]]$MeanInd[, non0ws]
+            corPre[[i]]$denInd = corPre[[i]]$denInd[non0ws]
+        }
+        reduXComb = as.matrix(combn(numS, 2))
+        
+        for (i in 1:ncol(reduXComb)) {
+            index1 = reduXComb[, i][1]
+            index2 = reduXComb[, i][2]
+            perEng = perEng + eng_MCC_pair(corPre2[[index1]], corPre2[[index2]], reduCs[[index1]], 
+                reduCs[[index2]])
+        }
+        ## scale to comparable with bcss/tss
+        perEng = perEng/choose(length(corPre), 2)
+        return(sum(perEng * ws[non0ws]))
+    }
+    
+}

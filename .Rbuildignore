@@ -6,3 +6,4 @@ scr/.DS_Store
 R/.DS-Store
 .DS_Store
 .Rbuildignore~
+*.DS_Store

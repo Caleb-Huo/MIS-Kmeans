@@ -32,8 +32,8 @@ GetWCSS <- function(x, Cs, ws = NULL) {
     for (k in unique(Cs)) {
         whichers <- (Cs == k)
         if (sum(whichers) > 1) 
-            wcss.perfeature <- wcss.perfeature + apply(scale(x[whichers, ], center = TRUE, scale = FALSE)^2, 
-                2, sum)
+            wcss.perfeature <- wcss.perfeature + apply(scale(x[whichers, ], center = TRUE, 
+                scale = FALSE)^2, 2, sum)
     }
     tss.perfeature <- apply(scale(x, center = TRUE, scale = FALSE)^2, 2, sum)
     bcss.perfeature <- tss.perfeature - wcss.perfeature
@@ -49,8 +49,8 @@ GetWCSS <- function(x, Cs, ws = NULL) {
 
 
 
-updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAdjust = FALSE, silent = FALSE, 
-    maxiter = 20) {
+updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAdjust = FALSE, 
+    silent = FALSE, maxiter = 20) {
     J <- ncol(d[[1]])
     ws.old <- rnorm(J)
     nonTrivialFlag = 1
@@ -87,7 +87,8 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             obj0 <- -sum(ws * aa)
             print(objective)
         } else {
-            ADMMobject <- UpdateWsADMM_m(d, Cs, ws, currentY = currentY, groupInfo, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
+            ADMMobject <- UpdateWsADMM_m(d, Cs, ws, currentY = currentY, groupInfo, tss.x, 
+                lambda, sampleSizeAdjust = sampleSizeAdjust)
             ws <- ADMMobject$z
             print(sum(ws != 0))
             currentY <- ADMMobject$currentY
@@ -138,9 +139,10 @@ UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda,
     x <- numeric(L)
     z <- ws
     
-    ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), r = as.double(aa), 
-        objective = as.double(0), groupLevel = as.integer(groupLevel), genePos = as.integer(genePos), coef = as.double(coef), 
-        J = as.integer(J), G = as.integer(G), L = as.integer(L))
+    ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), 
+        r = as.double(aa), objective = as.double(0), groupLevel = as.integer(groupLevel), 
+        genePos = as.integer(genePos), coef = as.double(coef), J = as.integer(J), G = as.integer(G), 
+        L = as.integer(L))
     
     ADMMobj$x <- NULL
     ADMMobj$r <- NULL
