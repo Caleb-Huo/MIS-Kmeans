@@ -1,14 +1,26 @@
 ##' @export
-MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, group = NULL, 
-    nstart = 20, wsPre = NULL, penaltyInfo = NULL, silent = FALSE, maxiter = 20, sampleSizeAdjust = FALSE) {
+MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, group = NULL, nstart = 20, 
+    wsPre = NULL, penaltyInfo = NULL, silent = FALSE, maxiter = 20, sampleSizeAdjust = FALSE) {
     
+    ## check input
+    if (length(d) < 2) {
+        stop("length of x must be greater or equal to 2.")
+    }
+    if (!all(sapply(d, ncol) == ncol(d[[1]]))) {
+        stop("all studies must have equal number of genes (ncol)")
+    }
+    if (is.null(K)) {
+        stop("must specify number of clusters K")
+    }
+    if (K < 3) {
+        stop("number of clusters K must be greater than 2")
+    }
     if (!is.null(penaltyInfo)) {
         if (!(length(gamma) == length(penaltyInfo))) {
             stop("gamma and penaltyInfo must have the same length.")
         }
     }
-    if (is.null(K)) 
-        stop("Must provide either K or centers.")
+    
     
     ## obtain basic information
     numStudies <- length(d)
@@ -21,7 +33,7 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
         tss.x[[i]] <- apply(scale(d[[i]], center = TRUE, scale = FALSE)^2, 2, sum)
     }
     
-    mskm <- MetaSparseKmeans(d, K = K, wbounds = 12, wsPre = wsPre)
+    mskm <- MetaSparseKmeans(d, K = K, wbounds = 12, wsPre = wsPre, sampleSizeAdjust = sampleSizeAdjust)
     # Map(adjustedRandIndex, mskm$Cs, label)
     
     wsPre <- mskm$ws
@@ -34,12 +46,11 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
         if (is.null(penaltyInfo)) {
             cat("initilizaing results using alpha = 1\n")
             groupInfoIni <- prepareGroup(group, J, G0, agamma, 1, wsPre)
-            ADMMobjectIni <- updateMISKmeans(d, K, groupInfoIni, Cs, wsPre, tss.x, lambda, 
-                sampleSizeAdjust = sampleSizeAdjust)
+            ADMMobjectIni <- updateMISKmeans(d, K, groupInfoIni, Cs, wsPre, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
             cat("initilizaing groups\n")
             groupInfo <- prepareGroup(group, J, G0, agamma, alpha, ADMMobjectIni$ws)
-            ADMMobject <- updateMISKmeans(d, K, groupInfo, ADMMobjectIni$Cs, ADMMobjectIni$ws, 
-                tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
+            ADMMobject <- updateMISKmeans(d, K, groupInfo, ADMMobjectIni$Cs, ADMMobjectIni$ws, tss.x, lambda, 
+                sampleSizeAdjust = sampleSizeAdjust)
             # Map(adjustedRandIndex, ADMMobject$Cs, label)
         } else {
             cat("using defined groups\n")

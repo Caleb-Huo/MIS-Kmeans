@@ -32,8 +32,8 @@ GetWCSS <- function(x, Cs, ws = NULL) {
     for (k in unique(Cs)) {
         whichers <- (Cs == k)
         if (sum(whichers) > 1) 
-            wcss.perfeature <- wcss.perfeature + apply(scale(x[whichers, ], center = TRUE, 
-                scale = FALSE)^2, 2, sum)
+            wcss.perfeature <- wcss.perfeature + apply(scale(x[whichers, ], center = TRUE, scale = FALSE)^2, 
+                2, sum)
     }
     tss.perfeature <- apply(scale(x, center = TRUE, scale = FALSE)^2, 2, sum)
     bcss.perfeature <- tss.perfeature - wcss.perfeature
@@ -49,11 +49,10 @@ GetWCSS <- function(x, Cs, ws = NULL) {
 
 
 
-updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAdjust = FALSE, 
-    silent = FALSE, maxiter = 20) {
+updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAdjust = FALSE, silent = FALSE, 
+    maxiter = 20) {
     J <- ncol(d[[1]])
     ws.old <- rnorm(J)
-    nonTrivialFlag = 1
     niter <- 0
     currentY <- NULL
     
@@ -63,7 +62,6 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
         niter <- niter + 1
         ws.old <- ws
         if (sum(ws != 0) < 1) {
-            nonTrivialFlag <- 0
             wsPre <- ws
             objective <- 0
             obj0 <- 0
@@ -73,41 +71,31 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             cat("Updating CS...\n", fill = FALSE)
         if (niter > 1) 
             Cs <- UpdateCs(d, K, ws, Cs, tss.x)  # if niter=1, no need to update!!
+        ## UpdateCs(d, K, ws, Cs, tss.x)
         if (!silent) 
             cat("Updating WS...\n", fill = FALSE)
         if (is.null(groupInfo)) {
-            nonTrivialFlag <- 0
             fmatch = patternMatch(d, Cs, ws, silence = silence)
             ratio = GetRatio(d, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
             aa <- ratio + lambda * (fmatch$perEng + 1)/2
             
             ws <- aa/sqrt(sum(aa^2))
-            wsPre <- ws
             objective <- -sum(ws * aa)
             obj0 <- -sum(ws * aa)
             print(objective)
         } else {
-            ADMMobject <- UpdateWsADMM_m(d, Cs, ws, currentY = currentY, groupInfo, tss.x, 
-                lambda, sampleSizeAdjust = sampleSizeAdjust)
+            ADMMobject <- UpdateWsADMM_m(d, Cs, ws, currentY = currentY, groupInfo, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
             ws <- ADMMobject$z
-            print(sum(ws != 0))
+            # print(sum(ws != 0))
             currentY <- ADMMobject$currentY
             print(ADMMobject$objective)
+            
+            objective = ADMMobject$objective
+            obj0 <- ADMMobject$obj0
         }
     }
-    if (nonTrivialFlag) {
-        ## ws[ws<sum(ws)/ncol(d)] <- 0
-        Cs <- UpdateCs(d, K, ws, Cs, tss.x)
-        fmatch = patternMatch(d, Cs, ws, silence = silence)
-        ratio = GetRatio(d, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
-        aa <- ratio + lambda * (fmatch$perEng + 1)/2
-        
-        wsPre <- ws
-        objective = ADMMobject$objective
-        obj0 <- -sum(ws * aa)
-        ## original implementation BIC <- (n - 1) * sum(ws * wcss$r) - log(n) * sum(ws)
-    }
-    res <- list(ws = ws, Cs = Cs, obj0 = obj0, objective = objective, groupInfo = groupInfo)
+    
+    res <- list(ws = ws, Cs = ADMMobject$Cs, obj0 = obj0, objective = objective, groupInfo = groupInfo)
     return(res)
 }
 
@@ -140,9 +128,8 @@ UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda,
     z <- ws
     
     ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), 
-        r = as.double(aa), objective = as.double(0), groupLevel = as.integer(groupLevel), 
-        genePos = as.integer(genePos), coef = as.double(coef), J = as.integer(J), G = as.integer(G), 
-        L = as.integer(L))
+        r = as.double(aa), objective = as.double(0), groupLevel = as.integer(groupLevel), genePos = as.integer(genePos), 
+        coef = as.double(coef), J = as.integer(J), G = as.integer(G), L = as.integer(L))
     
     ADMMobj$x <- NULL
     ADMMobj$r <- NULL
@@ -153,6 +140,9 @@ UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda,
     ADMMobj$J <- NULL
     ADMMobj$G <- NULL
     ADMMobj$L <- NULL
+    
+    ADMMobj$obj0 <- -sum(ws * aa)
+    ADMMobj$Cs = fmatch$matchCs
     
     return(ADMMobj)
 }

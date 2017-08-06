@@ -507,6 +507,6 @@ extern "C" {
 }
 
 // how to compile
-// g++ -c ADMM.cpp -o ADMM.o
-// g++ -c -fPIC ADMM.cpp -o ADMM.o
-// R CMD SHLIB ADMM.cpp
+// g++ -c MISKmeans.cpp -o MISKmeans.o
+// g++ -c -fPIC MISKmeans.cpp -o MISKmeans.o
+// R CMD SHLIB MISKmeans.cpp
