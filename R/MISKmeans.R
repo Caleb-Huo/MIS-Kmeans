@@ -1,7 +1,7 @@
 ##' @useDynLib MISKmeans
 ##' @export
 MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, group = NULL, nstart = 20, 
-    wsPre = NULL, penaltyInfo = NULL, silent = FALSE, maxiter = 20, sampleSizeAdjust = FALSE) {
+    wsPre = NULL, iniWbound = 20, penaltyInfo = NULL, silent = FALSE, maxiter = 20, sampleSizeAdjust = FALSE) {
     
     ## check input
     if (length(d) < 2) {
@@ -34,7 +34,8 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
         tss.x[[i]] <- apply(scale(d[[i]], center = TRUE, scale = FALSE)^2, 2, sum)
     }
     
-    mskm <- MetaSparseKmeans(d, K = K, wbounds = 12, wsPre = wsPre, sampleSizeAdjust = sampleSizeAdjust)
+    mskm <- MetaSparseKmeans(d, K = K, wbounds = iniWbound, wsPre = wsPre, sampleSizeAdjust = sampleSizeAdjust)
+   # mskm1 <- MetaSparseKmeans::MetaSparseKmeans(d, K = K, wbounds = 12, wsPre = wsPre, sampleSizeAdjust = sampleSizeAdjust)
     # Map(adjustedRandIndex, mskm$Cs, label)
     
     wsPre <- mskm$ws
