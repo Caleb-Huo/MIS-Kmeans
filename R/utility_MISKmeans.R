@@ -1,54 +1,3 @@
-UpdateCs1 <- function(x, K, ws, Cs, tss.x, nstart = nstart) {
-    x <- x[, ws != 0]
-    z <- sweep(x, 2, sqrt((ws/tss.x)[ws != 0]), "*")
-    nrowz <- nrow(z)
-    mus <- NULL
-    if (!is.null(Cs)) {
-        for (k in unique(Cs)) {
-            if (sum(Cs == k) > 1) 
-                mus <- rbind(mus, apply(z[Cs == k, ], 2, mean))
-            if (sum(Cs == k) == 1) 
-                mus <- rbind(mus, z[Cs == k, ])
-        }
-    }
-    if (is.null(mus)) {
-        km <- kmeans(z, centers = K, nstart = nstart)
-    } else {
-        distmat <- as.matrix(dist(rbind(z, mus)))[1:nrowz, (nrowz + 1):(nrowz + K)]
-        nearest <- apply(distmat, 1, which.min)
-        if (length(unique(nearest)) == K) {
-            km <- kmeans(z, centers = mus)
-        } else {
-            km <- kmeans(z, centers = K, nstart = nstart)
-        }
-    }
-    newCs <- km$cluster
-    return(newCs)
-}
-
-
-GetWCSS <- function(x, Cs, ws = NULL) {
-    wcss.perfeature <- numeric(ncol(x))
-    for (k in unique(Cs)) {
-        whichers <- (Cs == k)
-        if (sum(whichers) > 1) 
-            wcss.perfeature <- wcss.perfeature + apply(scale(x[whichers, ], center = TRUE, scale = FALSE)^2, 
-                2, sum)
-    }
-    tss.perfeature <- apply(scale(x, center = TRUE, scale = FALSE)^2, 2, sum)
-    bcss.perfeature <- tss.perfeature - wcss.perfeature
-    r <- bcss.perfeature/tss.perfeature
-    
-    if (!is.null(ws)) 
-        return(list(wcss.perfeature = wcss.perfeature, wcss = sum(wcss.perfeature), wcss.ws = sum(wcss.perfeature * 
-            ws), bcss.perfeature = bcss.perfeature, r = r))
-    if (is.null(ws)) 
-        return(list(wcss.perfeature = wcss.perfeature, wcss = sum(wcss.perfeature), bcss.perfeature = bcss.perfeature, 
-            r = r))
-}
-
-
-
 updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAdjust = FALSE, silent = FALSE, 
     maxiter = 20) {
     J <- ncol(d[[1]])
@@ -83,6 +32,9 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             objective <- -sum(ws * aa)
             obj0 <- -sum(ws * aa)
             print(objective)
+            
+            Cs_match <- fmatch$Cs
+            
         } else {
             ADMMobject <- UpdateWsADMM_m(d, Cs, ws, currentY = currentY, groupInfo, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
             ws <- ADMMobject$z
@@ -92,10 +44,12 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             
             objective = ADMMobject$objective
             obj0 <- ADMMobject$obj0
+            
+            Cs_match <- ADMMobject$Cs
         }
     }
     
-    res <- list(ws = ws, Cs = ADMMobject$Cs, obj0 = obj0, objective = objective, groupInfo = groupInfo)
+    res <- list(ws = ws, Cs = Cs_match, obj0 = obj0, objective = objective, groupInfo = groupInfo)
     return(res)
 }
 
@@ -127,9 +81,9 @@ UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda,
     x <- numeric(L)
     z <- ws
     
-    ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), r = as.double(aa), 
-        objective = as.double(0), groupLevel = as.integer(groupLevel), genePos = as.integer(genePos), coef = as.double(coef), 
-        J = as.integer(J), G = as.integer(G), L = as.integer(L))
+    ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), 
+        r = as.double(aa), objective = as.double(0), groupLevel = as.integer(groupLevel), genePos = as.integer(genePos), 
+        coef = as.double(coef), J = as.integer(J), G = as.integer(G), L = as.integer(L))
     
     ADMMobj$x <- NULL
     ADMMobj$r <- NULL
