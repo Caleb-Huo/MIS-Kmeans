@@ -238,8 +238,8 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
             aRank <- permK[[j1]]
             for (j2 in seq_along(permK)) {
                 bRank <- permK[[j2]]
-                energyK[[j2 + (j1 - 1) * length(permK)]] <- sum(eng_MCC_pair(corPre_a, corPre_b, aRank, 
-                  bRank) * ws2)
+                energyK[[j2 + (j1 - 1) * length(permK)]] <- sum(eng_MCC_pair(corPre_a, corPre_b, aRank, bRank) * 
+                  ws2)
                 encodeK0[[j2 + (j1 - 1) * length(permK)]] <- c(aRank, bRank)
             }
         }

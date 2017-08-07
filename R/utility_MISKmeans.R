@@ -127,9 +127,9 @@ UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda,
     x <- numeric(L)
     z <- ws
     
-    ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), 
-        r = as.double(aa), objective = as.double(0), groupLevel = as.integer(groupLevel), genePos = as.integer(genePos), 
-        coef = as.double(coef), J = as.integer(J), G = as.integer(G), L = as.integer(L))
+    ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), r = as.double(aa), 
+        objective = as.double(0), groupLevel = as.integer(groupLevel), genePos = as.integer(genePos), coef = as.double(coef), 
+        J = as.integer(J), G = as.integer(G), L = as.integer(L))
     
     ADMMobj$x <- NULL
     ADMMobj$r <- NULL

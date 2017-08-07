@@ -2,3 +2,4 @@
 
 export(MISKmeans)
 export(test)
+useDynLib(MISKmeans)

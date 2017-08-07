@@ -1,7 +1,7 @@
 ##' @useDynLib MISKmeans
 ##' @export
-MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, group = NULL, nstart = 20, 
-    wsPre = NULL, penaltyInfo = NULL, silent = FALSE, maxiter = 20, sampleSizeAdjust = FALSE) {
+MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, group = NULL, nstart = 20, wsPre = NULL, 
+    penaltyInfo = NULL, silent = FALSE, maxiter = 20, sampleSizeAdjust = FALSE) {
     
     ## check input
     if (length(d) < 2) {
