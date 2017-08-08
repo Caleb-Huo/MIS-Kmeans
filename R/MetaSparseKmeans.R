@@ -52,7 +52,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
         for (w in 1:length(wbounds)) {
             awbound = wbounds[w]
 			
-			wsPre <- wsPre
+			ws <- wsPre
                  
             ws.old <- rnorm(ncol(x[[1]]))
             store.ratio <- NULL
@@ -74,7 +74,6 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                 ratio = GetRatio(x, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
                 ws <- UpdateWs(x, Cs, awbound, ratio, lambda * (fmatch$perEng + 1)/2)
                 store.ratio <- c(store.ratio, sum(ratio * ws))
-                print(Map(adjustedRandIndex, fmatch$matchCs, label))
                 if (!silence) {
                   cat("iteration:")
                   cat(niter)
