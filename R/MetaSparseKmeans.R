@@ -34,7 +34,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
         # initialize initialize cluster by KMeans initialize w
         if (is.null(wsPre)) {
             for (i in 1:numStudies) {
-                Cs0[[i]] <- kmeans(x[[i]], centers = K, nstart = nstart)$cluster
+                Cs0[[i]] <- KMeansSparseCluster(x[[i]], K=K, wbounds=wbounds[1])[[1]]$Cs
             }
         } else {
             if (length(wsPre) != ncol(x[[1]])) 
@@ -67,11 +67,14 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                 if (niter > 1) 
                   Cs <- UpdateCs(x, K, ws, Cs, tss.x, nstart = nstart)  # if niter=1, no need to update!!
                 
-                fmatch = patternMatch(x, Cs, ws, silence = silence)
+                #fmatch = patternMatch(x, Cs, ws, silence = silence)
+                fmatch = patternMatch_old(x, Cs, ws, silence = silence)
+				
+				
                 ratio = GetRatio(x, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
                 ws <- UpdateWs(x, Cs, awbound, ratio, lambda * (fmatch$perEng + 1)/2)
                 store.ratio <- c(store.ratio, sum(ratio * ws))
-                
+                print(Map(adjustedRandIndex, fmatch$matchCs, label))
                 if (!silence) {
                   cat("iteration:")
                   cat(niter)
@@ -79,8 +82,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                   cat("convergence criteria: ")
                   cat(sum(abs(ws - ws.old))/sum(abs(ws.old)))
                   cat("\n")
-                }
-                
+                }                
             }
             score = sum((ratio + lambda * (fmatch$perEng + 1)/2) * ws)
             names(ws) <- colnames(x[[1]])

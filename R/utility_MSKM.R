@@ -414,7 +414,7 @@ if (F) {
         for (i in 1:ncol(reduXComb)) {
             index1 = reduXComb[, i][1]
             index2 = reduXComb[, i][2]
-            perEng = perEng + eng_MCC_pair(corPre2[[index1]], corPre2[[index2]], reduCs[[index1]], reduCs[[index2]])
+            perEng = perEng + eng_MCC_pair(corPre[[index1]], corPre[[index2]], reduCs[[index1]], reduCs[[index2]])
         }
         ## scale to comparable with bcss/tss
         perEng = perEng/choose(length(corPre), 2)
