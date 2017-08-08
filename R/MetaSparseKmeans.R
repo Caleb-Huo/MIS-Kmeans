@@ -68,7 +68,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                   Cs <- UpdateCs(x, K, ws, Cs, tss.x, nstart = nstart)  # if niter=1, no need to update!!
                 
                 #fmatch = patternMatch(x, Cs, ws, silence = silence)
-                fmatch = patternMatch_old(x, Cs, ws, silence = silence)
+                fmatch = patternMatch(x, Cs, ws, silence = silence)
 				
 				
                 ratio = GetRatio(x, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
