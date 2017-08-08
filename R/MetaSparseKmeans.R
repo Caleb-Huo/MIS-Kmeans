@@ -33,8 +33,11 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
     for (atrail in 1:ntrial) {
         # initialize initialize cluster by KMeans initialize w
         if (is.null(wsPre)) {
+			wsPre <- numeric(ncol(x[[1]]))
             for (i in 1:numStudies) {
-                Cs0[[i]] <- KMeansSparseCluster(x[[i]], K=K, wbounds=wbounds[1])[[1]]$Cs
+				asparcl <- KMeansSparseCluster(x[[i]], K=K, wbounds=wbounds[1])[[1]]
+                Cs0[[i]] <- asparcl$Cs
+				wsPre <- wsPre + asparcl$ws/numStudies
             }
         } else {
             if (length(wsPre) != ncol(x[[1]])) 
@@ -48,12 +51,9 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
         # 
         for (w in 1:length(wbounds)) {
             awbound = wbounds[w]
-            if (!is.null(wsPre)) {
-                ws = wsPre
-            } else {
-                ws <- rep(1, ncol(x[[1]]))/(ncol(x[[1]])) * awbound  # Start with equal weights on each feature
-            }
-            
+			
+			wsPre <- wsPre
+                 
             ws.old <- rnorm(ncol(x[[1]]))
             store.ratio <- NULL
             niter <- 0
