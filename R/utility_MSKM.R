@@ -99,7 +99,8 @@ eng_cor_per <- function(corPre, reduCs) {
     for (i in 1:ncol(reduXComb)) {
         index1 = reduXComb[, i][1]
         index2 = reduXComb[, i][2]
-        perEng = perEng + eng_MCC_pair(corPre[[index1]], corPre[[index2]], reduCs[[index1]], reduCs[[index2]])
+        perEng = perEng + eng_MCC_pair(corPre[[index1]], corPre[[index2]], reduCs[[index1]], 
+            reduCs[[index2]])
     }
     ## scale to comparable with bcss/tss
     return(perEng/choose(length(corPre), 2))
@@ -183,8 +184,8 @@ GetRatio <- function(x, Cs, tss.x, sampleSizeAdjust = FALSE) {
         for (k in unique(Cs[[i]])) {
             whichers <- (Cs[[i]] == k)
             if (sum(whichers) > 1) 
-                wcss.perfeature <- wcss.perfeature + apply(scale(x[[i]][whichers, ], center = TRUE, scale = FALSE)^2, 
-                  2, sum)
+                wcss.perfeature <- wcss.perfeature + apply(scale(x[[i]][whichers, ], center = TRUE, 
+                  scale = FALSE)^2, 2, sum)
         }
         aratio <- numeric(ncol(x[[1]]))
         bcss.perfeature = tss.perfeature - wcss.perfeature
@@ -238,8 +239,8 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
             aRank <- permK[[j1]]
             for (j2 in seq_along(permK)) {
                 bRank <- permK[[j2]]
-                energyK[[j2 + (j1 - 1) * length(permK)]] <- sum(eng_MCC_pair(corPre_a, corPre_b, aRank, 
-                  bRank) * ws2)
+                energyK[[j2 + (j1 - 1) * length(permK)]] <- sum(eng_MCC_pair(corPre_a, corPre_b, 
+                  aRank, bRank) * ws2)
                 encodeK0[[j2 + (j1 - 1) * length(permK)]] <- c(aRank, bRank)
             }
         }
@@ -282,13 +283,14 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
     while (permFlag[1] == 1) {
         
         tmpEng <- iniEnergy[S]
-        #print(tmpEng/choose(S, 2))
+        # print(tmpEng/choose(S, 2))
         if (tmpEng > highEng) {
             highEng = tmpEng
             resCs = tmpCs
         }
         
-        # eng_cor_total(corPre, reduCs = tmpCs, ws = ws) eng_cor_total(corPre2, reduCs = tmpCs, ws = ws2)
+        # eng_cor_total(corPre, reduCs = tmpCs, ws = ws) eng_cor_total(corPre2, reduCs = tmpCs, ws =
+        # ws2)
         
         permFlag[[S]] = permFlag[[S]] + 1
         
@@ -315,7 +317,8 @@ patternMatch <- function(x, Cs, ws, silence = FALSE) {
                   interEnergy <- interEnergy + hashS[[aSencode]][[aKencode]]
                 }
                 
-                iniEnergy[s:S] <- iniEnergy[s:S] + interEnergy - iniEnergy[s] + iniEnergy[s - 1]
+                iniEnergy[s:S] <- iniEnergy[s:S] + interEnergy - iniEnergy[s] + iniEnergy[s - 
+                  1]
             }
         }
         # print(iniEnergy/3)
@@ -414,7 +417,8 @@ if (F) {
         for (i in 1:ncol(reduXComb)) {
             index1 = reduXComb[, i][1]
             index2 = reduXComb[, i][2]
-            perEng = perEng + eng_MCC_pair(corPre[[index1]], corPre[[index2]], reduCs[[index1]], reduCs[[index2]])
+            perEng = perEng + eng_MCC_pair(corPre[[index1]], corPre[[index2]], reduCs[[index1]], 
+                reduCs[[index2]])
         }
         ## scale to comparable with bcss/tss
         perEng = perEng/choose(length(corPre), 2)
