@@ -31,7 +31,7 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             ws <- aa/sqrt(sum(aa^2))
             objective <- -sum(ws * aa)
             obj0 <- -sum(ws * aa)
-            print(objective)
+            # print(objective)
             
             Cs_match <- fmatch$Cs
             
@@ -41,7 +41,7 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             ws <- ADMMobject$z
             # print(sum(ws != 0))
             currentY <- ADMMobject$currentY
-            print(ADMMobject$objective)
+            # print(ADMMobject$objective)
             
             objective = ADMMobject$objective
             obj0 <- ADMMobject$obj0
@@ -142,12 +142,11 @@ prepareGroup <- function(group, J, G0, gamma, alpha, ws) {
             genePos[curPos:endPos] <- agroup
             a_inv_groupFeatureCounts <- 1/groupFeatureCounts[agroup]
             agroupPenalty <- max(sum(a_inv_groupFeatureCounts[aws != 0]), 1)
-            cat(agroupPenalty)
-            cat(" ")
+            # cat(agroupPenalty) cat(' ')
             coef[curPos:endPos] <- preCoef * sqrt(a_inv_groupFeatureCounts) * sqrt(agroupPenalty)
             curPos <- curPos + alen
         }
-        cat("\n")
+        # cat('\n')
         
         endPos <- curPos + J0 - 1
         groupLevel[curPos:endPos] <- (G0 + 1):(G0 + J0)

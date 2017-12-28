@@ -75,7 +75,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                 ratio = GetRatio(x, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
                 ws <- UpdateWs(x, Cs, awbound, ratio, lambda * (fmatch$perEng + 1)/2)
                 store.ratio <- c(store.ratio, sum(ratio * ws))
-                if (!silence) {
+                if (F) {
                   cat("iteration:")
                   cat(niter)
                   cat("\n")

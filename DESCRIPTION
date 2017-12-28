@@ -1,14 +1,14 @@
 Package: MISKmeans
 Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Version: 0.0.1
+Authors@R: person("Zhiguang", "Huo", email = "zhuo@ufl.edu", role = c("aut", "cre"))
+Description: Perform meta-analytic integrative sparse Kmeans.
 Depends:
     R (>= 3.3.1),
     hash,
     combinat,
     sparcl
-License: What license is it under?
+License: Apache License 2.0
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

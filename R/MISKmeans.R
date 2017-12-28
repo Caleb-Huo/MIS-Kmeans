@@ -112,7 +112,8 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
     }
     
     set.seed(32608)
-    mskm <- MetaSparseKmeans(d, K = K, wbounds = iniWbound, wsPre = wsPre, sampleSizeAdjust = sampleSizeAdjust)
+    mskm <- MetaSparseKmeans(d, K = K, wbounds = iniWbound, wsPre = wsPre, sampleSizeAdjust = sampleSizeAdjust, 
+        silent = silent)
     # mskm1 <- MetaSpaKmeans(d, K = K, wbounds = 25, wsPre = wsPre, sampleSizeAdjust =
     # sampleSizeAdjust) mskm1 <- MetaSparseKmeans::MetaSparseKmeans(d, K = K, wbounds = 25, wsPre
     # = wsPre, sampleSizeAdjust = sampleSizeAdjust) Map(adjustedRandIndex, mskm$Cs, label)
