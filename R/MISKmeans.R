@@ -111,6 +111,7 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
         tss.x[[i]] <- apply(scale(d[[i]], center = TRUE, scale = FALSE)^2, 2, sum)
     }
     
+    cat("MISKmeans: Perform MetaSparseKmeans to initialize the result\n")	
     set.seed(32608)
     mskm <- MetaSparseKmeans(d, K = K, wbounds = iniWbound, wsPre = wsPre, sampleSizeAdjust = sampleSizeAdjust, 
         silence = silent)
@@ -127,16 +128,16 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
     for (i in 1:length(gamma)) {
         agamma <- gamma[i]
         if (is.null(penaltyInfo)) {
-            cat("initilizaing results using alpha = 1\n")
+            cat("MISKmeans: initilizaing results using alpha = 1\n")
             groupInfoIni <- prepareGroup(group, J, G0, agamma, 1, wsPre)
             ADMMobjectIni <- updateMISKmeans(d, K, groupInfoIni, Cs, wsPre, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
-            cat("initilizaing groups\n")
+            cat("MISKmeans: initilizaing groups\n")
             groupInfo <- prepareGroup(group, J, G0, agamma, alpha, ADMMobjectIni$ws)
             ADMMobject <- updateMISKmeans(d, K, groupInfo, ADMMobjectIni$Cs, ADMMobjectIni$ws, 
                 tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
             # Map(adjustedRandIndex, ADMMobject$Cs, label)
         } else {
-            cat("using defined groups\n")
+            cat("MISKmeans: using defined groups\n")
             groupInfo <- penaltyInfo[[i]]
             ADMMobject <- updateMISKmeans(d, K, groupInfo, Cs, wsPre, tss.x, sampleSizeAdjust = sampleSizeAdjust)
         }
@@ -146,6 +147,7 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
     if (length(gamma) == 1) 
         out <- out[[i]]
     class(out) <- "MISKmeans"
+    cat("MISKmeans: done\n")
     return(out)
 }
 
