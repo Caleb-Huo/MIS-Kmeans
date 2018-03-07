@@ -35,7 +35,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
         if (is.null(wsPre)) {
             wsPre <- numeric(ncol(x[[1]]))
             for (i in 1:numStudies) {
-                asparcl <- KMeansSparseCluster(x[[i]], K = K, wbounds = wbounds[1], silence=silence)[[1]]
+                asparcl <- KMeansSparseCluster(x[[i]], K = K, wbounds = wbounds[1], silent=silence)[[1]]
                 Cs0[[i]] <- asparcl$Cs
                 wsPre <- wsPre + asparcl$ws/numStudies
             }
