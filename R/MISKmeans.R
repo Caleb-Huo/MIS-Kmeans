@@ -156,7 +156,9 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
     if (length(gamma) == 1) 
         out <- out[[i]]
     class(out) <- "MISKmeans"
-    cat("MISKmeans: done\n")
+	if(!silent){
+	    cat("MISKmeans: done\n")
+	}
     return(out)
 }
 
