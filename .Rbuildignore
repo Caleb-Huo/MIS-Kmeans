@@ -1,3 +1,5 @@
+# MAC file
+
 .git
 .RData
 .Rhistory
@@ -5,4 +7,4 @@
 scr/.DS_Store
 R/.DS-Store
 .DS_Store
-.Rbuildignore~
+.Rbuildignore
