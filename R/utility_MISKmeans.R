@@ -1,5 +1,5 @@
-updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAdjust = FALSE, 
-    silent = FALSE, maxiter = 20) {
+updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAdjust = FALSE, silent = FALSE, 
+    maxiter = 20) {
     J <- ncol(d[[1]])
     ws.old <- rnorm(J)
     niter <- 0
@@ -36,8 +36,7 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             Cs_match <- fmatch$Cs
             
         } else {
-            ADMMobject <- UpdateWsADMM_m(d, Cs, ws, currentY = currentY, groupInfo, tss.x, lambda, 
-                sampleSizeAdjust = sampleSizeAdjust)
+            ADMMobject <- UpdateWsADMM_m(d, Cs, ws, currentY = currentY, groupInfo, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
             ws <- ADMMobject$z
             # print(sum(ws != 0))
             currentY <- ADMMobject$currentY
@@ -82,9 +81,9 @@ UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda,
     x <- numeric(L)
     z <- ws
     
-    ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), 
-        r = as.double(aa), objective = as.double(0), groupLevel = as.integer(groupLevel), genePos = as.integer(genePos), 
-        coef = as.double(coef), J = as.integer(J), G = as.integer(G), L = as.integer(L))
+    ADMMobj <- .C("ADMM_updatew_R", x = as.double(x), currentY = as.double(currentY), z = as.double(z), r = as.double(aa), 
+        objective = as.double(0), groupLevel = as.integer(groupLevel), genePos = as.integer(genePos), coef = as.double(coef), 
+        J = as.integer(J), G = as.integer(G), L = as.integer(L))
     
     ADMMobj$x <- NULL
     ADMMobj$r <- NULL
@@ -103,12 +102,11 @@ UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda,
 }
 
 
-## prepare group information here module should be G-lists. Each element g contain feature
-## indexes whose domain is P.  L is the expanded length of non-zero element in J by G0 matrix.
-## groupLevel (L): 1,1,1,1,2,2,2,3,3,3,... increasing, same number indicate same group.
-## genePos (L): position.  coef (L): coef for the expanded features.  z (J): is the feature
-## weight.  x (J): primal variable.  y (J): dual variable.  ws: feature weight of previous
-## iteration
+## prepare group information here module should be G-lists. Each element g contain feature indexes whose
+## domain is P.  L is the expanded length of non-zero element in J by G0 matrix.  groupLevel (L):
+## 1,1,1,1,2,2,2,3,3,3,... increasing, same number indicate same group.  genePos (L): position.  coef (L):
+## coef for the expanded features.  z (J): is the feature weight.  x (J): primal variable.  y (J): dual
+## variable.  ws: feature weight of previous iteration
 
 prepareGroup <- function(group, J, G0, gamma, alpha, ws) {
     ## take care of trivial class
@@ -182,8 +180,7 @@ prepareGroup <- function(group, J, G0, gamma, alpha, ws) {
             genePos[curPos:endPos] <- agroup
             a_inv_groupFeatureCounts <- 1/groupFeatureCounts[agroup]
             agroupPenalty <- max(sum(a_inv_groupFeatureCounts[aws != 0]), 1)
-            #cat(agroupPenalty)
-            #cat(" ")
+            # cat(agroupPenalty) cat(' ')
             coef[curPos:endPos] <- preCoef * sqrt(a_inv_groupFeatureCounts) * sqrt(agroupPenalty)
             curPos <- curPos + alen
         }
@@ -196,8 +193,8 @@ prepareGroup <- function(group, J, G0, gamma, alpha, ws) {
         coef[curPos:endPos][groupFeatureCounts == 0] <- gamma
     }
     
-    groupInfo <- list(groupLevel = groupLevel, genePos = genePos, coef = coef, L = L, G = G0 + 
-        J0, J = J, alpha = alpha, gamma = gamma)
+    groupInfo <- list(groupLevel = groupLevel, genePos = genePos, coef = coef, L = L, G = G0 + J0, J = J, alpha = alpha, 
+        gamma = gamma)
     return(groupInfo)
 }
 

@@ -1,7 +1,7 @@
 ##' MISKmenas
 ##'
 ##' Meta-analytic multi-level omics data integration with incorporation of prior group structure
-##' @title MISKmenas
+##' @title MISKmeans
 ##' @param d combined data matrix n*J, where n is number of subjects, J=J1+J2+... and J1 is number of features in omics dataset 1 and J2 is number of features in omics dataset 2...
 ##' @param K number of clusters
 ##' @param gamma Penalty on total number of features. Larger gamma will yeild small number of selected features.
@@ -161,5 +161,29 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
 	}
     return(out)
 }
+
+
+
+
+if(F){
+	## for debug purpose
+	#d
+	K = NULL
+	gamma = NULL
+	lambda = 0.5
+	alpha = 0.5
+	group = NULL
+	nstart = 20
+	wsPre = NULL
+	iniWbound = 20
+	penaltyInfo = NULL
+	silent = FALSE
+	maxiter = 20
+	sampleSizeAdjust = FALSE
+}
+
+
+
+
 
 

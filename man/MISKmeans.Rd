@@ -2,7 +2,7 @@
 % Please edit documentation in R/MISKmeans.R
 \name{MISKmeans}
 \alias{MISKmeans}
-\title{MISKmenas}
+\title{MISKmeans}
 \usage{
 MISKmeans(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5,
   group = NULL, nstart = 20, wsPre = NULL, iniWbound = 20,

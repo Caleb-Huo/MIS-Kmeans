@@ -1,5 +1,5 @@
-MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 1, maxiter = 20, 
-    lambda = 1/2, sampleSizeAdjust = FALSE, wsPre = NULL, silence = FALSE) {
+MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 1, maxiter = 20, lambda = 1/2, 
+    sampleSizeAdjust = FALSE, wsPre = NULL, silence = FALSE) {
     
     ## check input
     if (length(x) < 2) {
@@ -35,7 +35,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
         if (is.null(wsPre)) {
             wsPre <- numeric(ncol(x[[1]]))
             for (i in 1:numStudies) {
-                asparcl <- KMeansSparseCluster(x[[i]], K = K, wbounds = wbounds[1], silent=silence)[[1]]
+                asparcl <- KMeansSparseCluster(x[[i]], K = K, wbounds = wbounds[1], silent = silence)[[1]]
                 Cs0[[i]] <- asparcl$Cs
                 wsPre <- wsPre + asparcl$ws/numStudies
             }
@@ -46,8 +46,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                 stop("there is no name for wsPre")
             if (any(names(wsPre) != colnames(x[[1]]))) 
                 stop("name of wsPre differs from gene name")
-            for (i in 1:numStudies) Cs0[[i]] <- weightedKMeans(x = t(x[[i]]), K = K, ws = wsPre, 
-                tss.x = tss.x[[i]])
+            for (i in 1:numStudies) Cs0[[i]] <- weightedKMeans(x = t(x[[i]]), K = K, ws = wsPre, tss.x = tss.x[[i]])
         }
         # 
         for (w in 1:length(wbounds)) {
