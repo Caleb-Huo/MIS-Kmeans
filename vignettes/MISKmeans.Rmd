@@ -58,91 +58,220 @@ The following steps are included.
 2. An example on the integration of gene expression data + CNV data.
 3. An example on the integration of gene expression data + methylation data.
 4. An example on the integration of gene expression data + CNV + methylation data.
-
+5. Other issues on number of clusters and tuning parameter selection.
 
 ### Input data format
 
 The input data should be multiple levels of omics data, as the format of data matrix, with common sample names for each layer of omics data.
-In this vignette, we will integrate gene expression, CNV and methylation of TCGA breast cancer dataset.
-A simplified version of these omics profiles can be accessed by data(BRCA_Expr2), dim(BRCA_CNV2) and dim(BRCA_Meth2).
+In this vignette, we will integrate gene expression, CNV and methylation of TCGA breast cancer dataset from two studies.
+A simplified version of these omics profiles can be accessed by data(BRCA_Expr_S1), dim(BRCA_CNV_S1) and dim(BRCA_Meth_S1) for the first study; 
+data(BRCA_Expr_S2), dim(BRCA_CNV_S2) and dim(BRCA_Meth_S2) for the second study.
 
 ```{r}
 library(MISKmeans)
-data("BRCA_Expr2") ## gene expression profile
-data("BRCA_CNV2") ## copy number variation profile
-data("BRCA_Meth2") ## DNA methylation profile
+data("BRCA_Expr_S1") ## gene expression profile of study 1
+data("BRCA_Expr_S2") ## gene expression profile of study 2
+data("BRCA_CNV_S1") ## copy number variation profile of study 1
+data("BRCA_CNV_S2") ## copy number variation profile of study 2
+data("BRCA_Meth_S1") ## DNA methylation profile of study 1
+data("BRCA_Meth_S2") ## DNA methylation profile of study 2
 
-dim(BRCA_Expr2)
-dim(BRCA_CNV2)
-dim(BRCA_Meth2)
+dim(BRCA_Expr_S1)
+dim(BRCA_Expr_S2)
+dim(BRCA_CNV_S1)
+dim(BRCA_CNV_S2)
+dim(BRCA_Meth_S1)
+dim(BRCA_Meth_S2)
 ```
 
 There are totally 770 common subjects for each layer of omics data.
 The following code is to check the sample names are all the same.
 
 ```{r}
-## check the sample names
-all(colnames(BRCA_Expr2) == colnames(BRCA_CNV2))
-all(colnames(BRCA_Expr2) == colnames(BRCA_Meth2))
-```
+## check the sample names for study 1
+all(colnames(BRCA_Expr_S1) == colnames(BRCA_CNV_S1))
+all(colnames(BRCA_Expr_S1) == colnames(BRCA_Meth_S1))
 
-Since MISKmeans is able to integrate multiple cohorts,
-we split the 770 subjects into two sub studies.
+## check the sample names for study 2
+all(colnames(BRCA_Expr_S2) == colnames(BRCA_CNV_S2))
+all(colnames(BRCA_Expr_S2) == colnames(BRCA_Meth_S2))
 
-```{r}
-index_sub1 <- 1:100
-index_sub2 <- 101:200
-```
-
-Finally, prepare the multi-cohort and multi-omics studies.
-```{r}
-study1_Expr <- BRCA_Expr2[,index_sub1] ## study 1, gene expression
-study1_CNV <- BRCA_CNV2[,index_sub1] ## study 1, CNV
-study1_Meth <- BRCA_Meth2[,index_sub1] ## study 1, methylation
-
-study2_Expr <- BRCA_Expr2[,index_sub2] ## study 2, gene expression
-study2_CNV <- BRCA_CNV2[,index_sub2] ## study 2, CNV
-study2_Meth <- BRCA_Meth2[,index_sub2] ## study 2, methylation
+## check feature names are consistent across studies.
+all(rownames(BRCA_Expr_S1) == rownames(BRCA_Expr_S2))
+all(rownames(BRCA_CNV_S1) == rownames(BRCA_CNV_S2))
+all(rownames(BRCA_Meth_S1) == rownames(BRCA_Meth_S2))
 ```
 
 ### An example on the integration of gene expression data + CNV data.
 
 We first need to combine the profiles of Expr and CNV.
 ```{r}
-study1_combineEC <- rbind(study1_Expr, study1_CNV)
-study2_combineEC <- rbind(study2_Expr, study2_CNV)
+study1_combineEC <- rbind(BRCA_Expr_S1, BRCA_CNV_S1)
+study2_combineEC <- rbind(BRCA_Expr_S2, BRCA_CNV_S2)
 data_combineEC <- list(t(study1_combineEC), t(study2_combineEC))
 ```
 
 Second we need to prepare the grouping information between Expr and CNV.
 The grouping information should be input as a list:
 ```{r}
-omicsTyps <- c(rep('gene',nrow(study1_Expr)),rep('CNV',nrow(study1_CNV)))
-featureNames <- c(rownames(study1_Expr),rownames(study1_CNV))
-groups <- split(1:length(featureNames),featureNames)
+omicsTyps_EC <- c(rep('gene',nrow(BRCA_Expr_S1)),rep('CNV',nrow(BRCA_CNV_S1)))
+featureNames_EC <- c(rownames(BRCA_Expr_S1),rownames(BRCA_CNV_S1))
+groups_EC <- split(1:length(featureNames_EC),featureNames_EC)
 ```
 
 Third step is to perform MISKmeans
 ```{r}
-res_combineEC <- MISKmeans(data_combineEC,K=3,group=groups,gamma=0.7)
+set.seed(15213)
+res_combineEC <- MISKmeans(data_combineEC,K=3,group=groups_EC,gamma=0.7, silent=T)
 table(res_combineEC$ws != 0)
 res_combineEC$Cs
 
-ws_gene <- res_combineEC$ws[omicsTyps=="gene"]
+ws_gene <- res_combineEC$ws[omicsTyps_EC=="gene"]
 table(ws_gene!=0)
-ws_CNV <- res_combineEC$ws[omicsTyps=="CNV"]
+ws_CNV <- res_combineEC$ws[omicsTyps_EC=="CNV"]
 table(ws_CNV!=0)
-
 ```
 
 visualization for the gene expression profile and CNV profile
-```{r}
-getWsHeatmap(study1_Expr, res_combineEC$Cs[[1]], ws = ws_gene, Rowv=TRUE, main="S1, Expr")
-getWsHeatmap(study1_CNV, res_combineEC$Cs[[1]], ws = ws_CNV, Rowv=TRUE, main="S1, CNV")
-
-getWsHeatmap(study2_Expr, res_combineEC$Cs[[2]], ws = ws_gene, Rowv=TRUE, main="S2, Expr")
-getWsHeatmap(study2_CNV, res_combineEC$Cs[[2]], ws = ws_CNV, Rowv=TRUE, main="S2, CNV")
+```{r, fig.keep='none'}
+## generate gene orders
+aheatmap <- getWsHeatmap(BRCA_Expr_S1, res_combineEC$Cs[[1]], ws = ws_gene, Rowv=TRUE, main="S1, Expr")
+bheatmap <- getWsHeatmap(BRCA_CNV_S1, res_combineEC$Cs[[1]], ws = ws_CNV, Rowv=TRUE, main="S1, CNV")
 ```
+```{r,fig.show='hold'}
+getWsHeatmap(BRCA_Expr_S1, res_combineEC$Cs[[1]], ws = ws_gene, geneOrder = aheatmap$rowInd, main="S1, Expr")
+getWsHeatmap(BRCA_Expr_S2, res_combineEC$Cs[[2]], ws = ws_gene, geneOrder = aheatmap$rowInd, main="S2, Expr")
+getWsHeatmap(BRCA_CNV_S1, res_combineEC$Cs[[1]], ws = ws_CNV, geneOrder = bheatmap$rowInd, main="S1, CNV")
+getWsHeatmap(BRCA_CNV_S2, res_combineEC$Cs[[2]], ws = ws_CNV, geneOrder = bheatmap$rowInd, main="S2, CNV")
+```
+
+### An example on the integration of gene expression data + methylation data.
+
+We first need to combine the profiles of Expr and methylation
+```{r}
+study1_combineEM <- rbind(BRCA_Expr_S1, BRCA_Meth_S1)
+study2_combineEM <- rbind(BRCA_Expr_S2, BRCA_Meth_S2)
+data_combineEM <- list(t(study1_combineEM), t(study2_combineEM))
+```
+
+Second we need to prepare the grouping information between Expr and methylation
+The grouping information should be input as a list:
+```{r}
+omicsTyps_EM <- c(rep('gene',nrow(BRCA_Expr_S1)),rep('methyl',nrow(BRCA_Meth_S1)))
+featureNames_EM <- c(rownames(BRCA_Expr_S1),rownames(BRCA_Meth_S1))
+groups_EM <- split(1:length(featureNames_EM),featureNames_EM)
+```
+
+Third step is to perform MISKmeans
+```{r}
+set.seed(15213)
+res_combineEM <- MISKmeans(data_combineEM,K=3,group=groups_EM,gamma=0.7, silent=T)
+table(res_combineEM$ws != 0)
+res_combineEM$Cs
+
+ws_gene <- res_combineEM$ws[omicsTyps_EM=="gene"]
+table(ws_gene!=0)
+ws_methyl <- res_combineEM$ws[omicsTyps_EM=="methyl"]
+table(ws_methyl!=0)
+```
+
+visualization for the gene expression profile and CNV profile
+```{r, fig.keep='none'}
+aheatmap <- getWsHeatmap(BRCA_Expr_S1, res_combineEM$Cs[[1]], ws = ws_gene, Rowv=TRUE, main="S1, Expr")
+cheatmap <- getWsHeatmap(BRCA_Meth_S1, res_combineEM$Cs[[1]], ws = ws_methyl, Rowv=TRUE, main="S1, methylation")
+```
+```{r,fig.show='hold'}
+getWsHeatmap(BRCA_Expr_S1, res_combineEM$Cs[[1]], ws = ws_gene, geneOrder = aheatmap$rowInd, main="S1, Expr")
+getWsHeatmap(BRCA_Expr_S2, res_combineEM$Cs[[2]], ws = ws_gene, geneOrder = aheatmap$rowInd, main="S2, Expr")
+getWsHeatmap(BRCA_Meth_S1, res_combineEM$Cs[[1]], ws = ws_methyl, geneOrder = cheatmap$rowInd, main="S1, methylation")
+getWsHeatmap(BRCA_Meth_S2, res_combineEM$Cs[[2]], ws = ws_methyl, geneOrder = cheatmap$rowInd, main="S2, methylation")
+```
+
+Compare the subtyping result by (gene expression data + CNV data) and (gene expression data + methylation data). Such comparison is performed by adjusted rand index. Details please refer to the real data example in the MISKmeans manuscript.
+
+```{r}
+library(mclust)
+adjustedRandIndex(res_combineEM$Cs[[1]], res_combineEC$Cs[[1]])
+adjustedRandIndex(res_combineEM$Cs[[2]], res_combineEC$Cs[[2]])
+```
+
+
+### An example on the integration of gene expression data + CNV data + methylation data.
+
+We first need to combine the profiles of Expr, CNV and methylation
+```{r}
+study1_combineECM <- rbind(BRCA_Expr_S1, BRCA_CNV_S1, BRCA_Meth_S1)
+study2_combineECM <- rbind(BRCA_Expr_S2, BRCA_CNV_S1, BRCA_Meth_S2)
+data_combineECM <- list(t(study1_combineECM), t(study2_combineECM))
+```
+
+Second we need to prepare the grouping information between Expr, CNV and methylation
+The grouping information should be input as a list:
+```{r}
+omicsTyps_ECM <- c(rep('gene',nrow(BRCA_Expr_S1)),rep('CNV',nrow(BRCA_CNV_S1)),rep('methyl',nrow(BRCA_Meth_S1)))
+featureNames_ECM <- c(rownames(BRCA_Expr_S1),rownames(BRCA_CNV_S1),rownames(BRCA_Meth_S1))
+groups_ECM <- split(1:length(featureNames_ECM),featureNames_ECM)
+```
+
+Third step is to perform MISKmeans
+```{r}
+set.seed(15213)
+res_combineECM <- MISKmeans(data_combineECM,K=3,group=groups_ECM,gamma=0.7, silent=T)
+table(res_combineECM$ws != 0)
+res_combineECM$Cs
+
+ws_gene <- res_combineECM$ws[omicsTyps_ECM=="gene"]
+table(ws_gene!=0)
+ws_CNV <- res_combineECM$ws[omicsTyps_ECM=="CNV"]
+table(ws_CNV!=0)
+ws_methyl <- res_combineECM$ws[omicsTyps_ECM=="methyl"]
+table(ws_methyl!=0)
+```
+
+visualization for the gene expression profile, CNV profile and the methylation profile.
+```{r, fig.keep='none'}
+aheatmap <- getWsHeatmap(BRCA_Expr_S1, res_combineEM$Cs[[1]], ws = ws_gene, Rowv=TRUE)
+bheatmap <- getWsHeatmap(BRCA_CNV_S1, res_combineEM$Cs[[1]], ws = ws_CNV, Rowv=TRUE)
+cheatmap <- getWsHeatmap(BRCA_Meth_S1, res_combineEM$Cs[[1]], ws = ws_methyl, Rowv=TRUE)
+```
+```{r,fig.show='hold'}
+getWsHeatmap(BRCA_Expr_S1, res_combineECM$Cs[[1]], ws = ws_gene, geneOrder = aheatmap$rowInd, main="S1, Expr")
+getWsHeatmap(BRCA_Expr_S2, res_combineECM$Cs[[2]], ws = ws_gene,aheatmap$rowInd, main="S2, Expr")
+getWsHeatmap(BRCA_CNV_S1, res_combineECM$Cs[[1]], ws = ws_CNV, geneOrder = bheatmap$rowInd, main="S1, CNV")
+getWsHeatmap(BRCA_CNV_S2, res_combineECM$Cs[[2]], ws = ws_CNV, bheatmap$rowInd, main="S2, CNV")
+getWsHeatmap(BRCA_Meth_S1, res_combineECM$Cs[[1]], ws = ws_methyl, geneOrder = cheatmap$rowInd, main="S1, methylation")
+getWsHeatmap(BRCA_Meth_S2, res_combineECM$Cs[[2]], ws = ws_methyl, geneOrder = cheatmap$rowInd, main="S2, methylation")
+```
+
+Compare the subtyping result by ECM (gene expression data + CNV data + Methylation data) and results by EC and EM. Such comparison is performed by adjusted rand index. Details please refer to the real data example in the MISKmeans manuscript.
+
+```{r}
+## ECM vs EC
+adjustedRandIndex(res_combineECM$Cs[[1]], res_combineEC$Cs[[1]])
+adjustedRandIndex(res_combineECM$Cs[[2]], res_combineEC$Cs[[2]])
+
+## ECM vs EM
+adjustedRandIndex(res_combineECM$Cs[[1]], res_combineEM$Cs[[1]])
+adjustedRandIndex(res_combineECM$Cs[[2]], res_combineEM$Cs[[2]])
+```
+
+We can see from the clustering results for ECM and EM are the same, but EC result is a little bit different from ECM and EM.
+
+### Other issues.
+
+1. For number of clusters $K$, we would suggest use to use standard tools (e.g. gap statistics, prediction strength) to predict $K$ in each individual study and data types, and then do a joint prediction.
+
+2. For the tuning parameter gamma, though we have developed a method via gap statistics, 
+but it doesn't work out very well as it will select more features than expected in real data.
+This is a hard problem we couldn't properly solve. 
+We suggest users to try a range of gamma and check which one makes better biological sense.
+Below is an example how to try a range of gamma from 0.1 to 0.7.
+
+```{eval=F}
+res_combineECM <- MISKmeans(data_combineECM,K=3,group=groups_ECM,gamma=seq(0.1, 0.7, 0.1), silent=T)
+```
+
+
 
 
 
