@@ -90,8 +90,8 @@ Since MISKmeans is able to integrate multiple cohorts,
 we split the 770 subjects into two sub studies.
 
 ```{r}
-index_sub1 <- 1:385
-index_sub2 <- 386:770
+index_sub1 <- 1:100
+index_sub2 <- 101:200
 ```
 
 Finally, prepare the multi-cohort and multi-omics studies.
@@ -100,9 +100,9 @@ study1_Expr <- BRCA_Expr2[,index_sub1] ## study 1, gene expression
 study1_CNV <- BRCA_CNV2[,index_sub1] ## study 1, CNV
 study1_Meth <- BRCA_Meth2[,index_sub1] ## study 1, methylation
 
-study2_Expr <- BRCA_Expr2[,index_sub1] ## study 2, gene expression
-study2_CNV <- BRCA_CNV2[,index_sub1] ## study 2, CNV
-study2_Meth <- BRCA_Meth2[,index_sub1] ## study 2, methylation
+study2_Expr <- BRCA_Expr2[,index_sub2] ## study 2, gene expression
+study2_CNV <- BRCA_CNV2[,index_sub2] ## study 2, CNV
+study2_Meth <- BRCA_Meth2[,index_sub2] ## study 2, methylation
 ```
 
 ### An example on the integration of gene expression data + CNV data.
@@ -124,12 +124,25 @@ groups <- split(1:length(featureNames),featureNames)
 
 Third step is to perform MISKmeans
 ```{r}
-#res_combineEC <- MISKmeans(data_combineEC,K=5,group=groups,gamma=0.5)
-#table(res_combineEC$ws != 0)
-#res_combineEC$Cs
+res_combineEC <- MISKmeans(data_combineEC,K=3,group=groups,gamma=0.7)
+table(res_combineEC$ws != 0)
+res_combineEC$Cs
+
+ws_gene <- res_combineEC$ws[omicsTyps=="gene"]
+table(ws_gene!=0)
+ws_CNV <- res_combineEC$ws[omicsTyps=="CNV"]
+table(ws_CNV!=0)
+
 ```
 
 visualization for the gene expression profile and CNV profile
+```{r}
+getWsHeatmap(study1_Expr, res_combineEC$Cs[[1]], ws = ws_gene, Rowv=TRUE, main="S1, Expr")
+getWsHeatmap(study1_CNV, res_combineEC$Cs[[1]], ws = ws_CNV, Rowv=TRUE, main="S1, CNV")
+
+getWsHeatmap(study2_Expr, res_combineEC$Cs[[2]], ws = ws_gene, Rowv=TRUE, main="S2, Expr")
+getWsHeatmap(study2_CNV, res_combineEC$Cs[[2]], ws = ws_CNV, Rowv=TRUE, main="S2, CNV")
+```
 
 
 
