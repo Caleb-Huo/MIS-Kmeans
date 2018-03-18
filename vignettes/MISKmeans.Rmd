@@ -62,7 +62,14 @@ The following steps are included.
 
 ### Input data format
 
-The input data should be multiple levels of omics data, as the format of data matrix, with common sample names for each layer of omics data.
+The input data should be multi-cohort, multiple levels of omics data, 
+as the format of data matrix, with common sample names for each layer of omics data.
+In this example, the features names in different omics level overlap, which defines the grouping information.
+For example, the expression profile, CNV profile and methylation profile all contain gene "A2M", 
+these three features from different omics profile will form a group representing the cis-regulatory relationship of the same gene symbol.
+We will demonstrate how to prepare such group information to feed the MISKeamns in later examples.
+Another commonly used group information is biological pathway information, 
+where a group of gene features are formed by a pathway name.
 In this vignette, we will integrate gene expression, CNV and methylation of TCGA breast cancer dataset from two studies.
 A simplified version of these omics profiles can be accessed by data(BRCA_Expr_S1), dim(BRCA_CNV_S1) and dim(BRCA_Meth_S1) for the first study; 
 data(BRCA_Expr_S2), dim(BRCA_CNV_S2) and dim(BRCA_Meth_S2) for the second study.
@@ -84,7 +91,11 @@ dim(BRCA_Meth_S1)
 dim(BRCA_Meth_S2)
 ```
 
-There are totally 770 common subjects for each layer of omics data.
+For study 1, there are 100 common subjects for each of the three layers of omics data.
+For study 2, there are 100 common subjects for each of the three layers of omics data.
+Across studies, study 1 and study 2 have the common gene symbols in each layer of omics data.
+Further, several these features are grouped together by the same gene symbol.
+How to prepare such groups in R will be introduced shortly in this vignette.
 The following code is to check the sample names are all the same.
 
 ```{r}

@@ -184,7 +184,6 @@ prepareGroup <- function(group, J, G0, gamma, alpha, ws) {
             coef[curPos:endPos] <- preCoef * sqrt(a_inv_groupFeatureCounts) * sqrt(agroupPenalty)
             curPos <- curPos + alen
         }
-        cat("\n")
         
         endPos <- curPos + J - 1
         groupLevel[curPos:endPos] <- (G0 + 1):(G0 + J)
