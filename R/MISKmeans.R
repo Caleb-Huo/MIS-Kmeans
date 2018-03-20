@@ -138,6 +138,12 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
 			if(!silent){
 				cat("Performing MISKmeans.\n")
 			}
+			
+			if(all(ADMMobjectIni$ws==0)){
+				warning("gamma is ", agamma, ", too large such that all ws are zeor. Please consider smaller gamma.")
+				out[[i]] <- ADMMobjectIni
+				next
+			}
 			            
             groupInfo <- prepareGroup(group, J, G0, agamma, alpha, ADMMobjectIni$ws)
             ADMMobject <- updateMISKmeans(d, K, groupInfo, ADMMobjectIni$Cs, ADMMobjectIni$ws, 
