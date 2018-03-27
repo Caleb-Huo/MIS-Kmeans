@@ -174,11 +174,11 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
 if(F){
 	## for debug purpose
 	#d
-	K = NULL
-	gamma = NULL
+	K = 3
+	gamma = 0.88
 	lambda = 0.5
 	alpha = 0.5
-	group = NULL
+	group=groupInfo
 	nstart = 20
 	wsPre = NULL
 	iniWbound = 20
