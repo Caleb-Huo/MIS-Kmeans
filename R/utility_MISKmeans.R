@@ -10,7 +10,7 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             cat("Iteration", niter, ":\n", fill = FALSE)
         niter <- niter + 1
         ws.old <- ws
-        if (sum(ws != 0) < 1) {
+        if (sum(ws != 0) < 2) {
             wsPre <- ws
             objective <- 0
             obj0 <- 0
