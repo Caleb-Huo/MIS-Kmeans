@@ -14,6 +14,7 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             wsPre <- ws
             objective <- 0
             obj0 <- 0
+			Cs_match <- Cs
             break
         }
         if (!silent) 

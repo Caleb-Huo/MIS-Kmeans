@@ -175,7 +175,7 @@ if(F){
 	## for debug purpose
 	#d
 	K = 3
-	gamma = 1.07
+	agamma = 1.07
 	lambda = 0.5
 	alpha = 0.5
 	group=groupInfo
