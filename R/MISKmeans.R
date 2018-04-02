@@ -90,7 +90,7 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
     if (is.null(K)) {
         stop("must specify number of clusters K")
     }
-    if (K < 3) {
+    if (K < 2) {
         stop("number of clusters K must be greater than 2")
     }
     if (!is.null(penaltyInfo)) {

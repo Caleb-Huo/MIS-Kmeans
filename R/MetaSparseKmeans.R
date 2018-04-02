@@ -11,7 +11,7 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
     if (is.null(K)) {
         stop("must specify number of clusters K")
     }
-    if (K < 3) {
+    if (K < 2) {
         stop("number of clusters K must be greater than 2")
     }
     
@@ -74,14 +74,6 @@ MetaSparseKmeans <- function(x, K = NULL, wbounds = NULL, nstart = 20, ntrial = 
                 ratio = GetRatio(x, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
                 ws <- UpdateWs(x, Cs, awbound, ratio, lambda * (fmatch$perEng + 1)/2)
                 store.ratio <- c(store.ratio, sum(ratio * ws))
-                if (F) {
-                  cat("iteration:")
-                  cat(niter)
-                  cat("\n")
-                  cat("convergence criteria: ")
-                  cat(sum(abs(ws - ws.old))/sum(abs(ws.old)))
-                  cat("\n")
-                }
             }
             score = sum((ratio + lambda * (fmatch$perEng + 1)/2) * ws)
             names(ws) <- colnames(x[[1]])
