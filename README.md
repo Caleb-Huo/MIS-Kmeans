@@ -26,9 +26,7 @@ install.packages("MIS-Kmeans_0.0.1.tar.gz",repos=NULL,type="source")
 
 ## How to use this R package:
 
-* After installing this package from github (with build_vignettes=TRUE), In R console:
-```R
-browseVignettes("MISKmeans")
-```
+Check out the full tutorial here:
+http://htmlpreview.github.io/?https://github.com/Caleb-Huo/MIS-Kmeans/blob/master/vignettes/MISKmeans.html
 
 
