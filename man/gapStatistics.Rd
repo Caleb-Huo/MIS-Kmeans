@@ -4,8 +4,8 @@
 \alias{gapStatistics}
 \title{gap statistics}
 \usage{
-gapStatistics(d, K = 3, B = 10, gamma = NULL, alpha = 1, group = NULL,
-  seed = 15213, silence = FALSE)
+gapStatistics(d, K = 3, B = 10, gammas = NULL, alpha = 1,
+  group = NULL, seed = 15213, silence = FALSE)
 }
 \arguments{
 \item{d}{A list of S studies, each study is a combined data matrix n*J, where n is number of subjects, J=J1+J2+... and J1 is number of features in omics dataset 1 and J2 is number of features in omics dataset 2...}
@@ -14,8 +14,6 @@ gapStatistics(d, K = 3, B = 10, gamma = NULL, alpha = 1, group = NULL,
 
 \item{B}{number of permutations.}
 
-\item{gamma}{Penalty on total number of features. Default is given. Larger gamma will yeild small number of selected features.}
-
 \item{alpha}{balance between group sparsity and individual sparsity. alpha=1 yeilds no group sparsity. alpha=0 yeilds no individual penalty.}
 
 \item{group}{Prior group information. Potentially these group can contain overlap features. group is a list and each element of the list is feature index.}
@@ -23,6 +21,8 @@ gapStatistics(d, K = 3, B = 10, gamma = NULL, alpha = 1, group = NULL,
 \item{seed}{random seed}
 
 \item{silence}{do not print progress in silence = TRUE.}
+
+\item{gamma}{Penalty on total number of features. Default is given. Larger gamma will yeild small number of selected features.}
 }
 \value{
 a table. Each row represents a gamma. 

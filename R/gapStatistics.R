@@ -50,19 +50,19 @@
 ##' gapResult <- gapStatistics(d=S,K=3,B=10,group=groups)
 ##' print(gapResult)
 gapStatistics <-
-function(d,K=3,B=10,gamma=NULL,alpha=1, group=NULL,seed=15213,silence=FALSE){
+function(d,K=3,B=10,gammas=NULL,alpha=1, group=NULL,seed=15213,silence=FALSE){
   if (B != (B. <- as.integer(B)) || (B <- B.) <= 0)
      stop("'B' has to be a positive integer")
-  if (is.null(gamma))
-	  gamma <- seq(0,0.8, 0.05)
-  if (min(gamma) < 0)
-      stop("gamma should be greater than or equal to 0")
+  if (is.null(gammas))
+	  gammas <- seq(0.1,0.8, 0.05)
+  if (min(gammas) <= 0)
+      stop("gammas should be greater than 0")
 
   ## get true objective score
   if (!silence)
   	cat("calculating true score...\n")
   set.seed(seed)
-  trueRes <- MISKmeans(d,K=K,gamma=gamma,alpha=alpha,group=group,silent=TRUE)
+  trueRes <- MISKmeans(d,K=K,gamma=gammas,alpha=alpha,group=group,silent=TRUE)
 
   numF <- sapply(trueRes,function(x) sum(x$ws!=0))
   nGamma <- sapply(trueRes,function(x) x$groupInfo$gamma)
@@ -79,7 +79,7 @@ function(d,K=3,B=10,gamma=NULL,alpha=1, group=NULL,seed=15213,silence=FALSE){
 	  set.seed(15213+b)
       ad = lapply(d,function(dd) t(apply(dd,1,function(x) sample(x))))
 
-	  permRes <- MISKmeans(ad,K=K,gamma=gamma,alpha=alpha,group=group,penaltyInfo=groupInfos,silent=TRUE)
+	  permRes <- MISKmeans(ad,K=K,gamma=gammas,alpha=alpha,group=group,penaltyInfo=groupInfos,silent=TRUE)
 	  scoreperm <- sapply(permRes,function(x) x$obj0)
 	  E.score.full <- rbind(E.score.full, scoreperm)
   }
@@ -92,8 +92,8 @@ function(d,K=3,B=10,gamma=NULL,alpha=1, group=NULL,seed=15213,silence=FALSE){
 
   gapStat <- score - E.score
 
-  stat <- data.frame(gamma, score, E.score, se.score, gapStat,numF=numF)
-  bestGamma <- gamma[which.min(gapStat)]
+  stat <- data.frame(gammas, score, E.score, se.score, gapStat,numF=numF)
+  bestGamma <- gammas[which.min(gapStat)]
   result <- list(stat=stat, bestGamma=bestGamma)
   return(result)
 }
