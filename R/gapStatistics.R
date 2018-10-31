@@ -47,7 +47,7 @@
 ##' S = list(t(S1),t(S2))
 ##' groups <- Map('c',1:g1,g1 + 1:g2)
 ##' 
-##' gapResult <- gapStatistics(d=S,K=3,B=10,group=group)
+##' gapResult <- gapStatistics(d=S,K=3,B=10,group=groups)
 ##' print(gapResult)
 gapStatistics <-
 function(d,K=3,B=10,gamma=NULL,alpha=1, group=NULL,seed=15213,silence=FALSE){
