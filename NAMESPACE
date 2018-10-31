@@ -2,4 +2,6 @@
 
 export(MISKmeans)
 export(getWsHeatmap)
+export(inferAlpha)
+export(inferLambda)
 useDynLib(MISKmeans)

@@ -25,10 +25,13 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
         if (!silent) 
             cat("Updating WS...\n", fill = FALSE)
         if (is.null(groupInfo)) {
+		    
             fmatch = patternMatch(d, Cs, ws, silence = silence)
-            ratio = GetRatio(d, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
-            aa <- ratio + lambda * (fmatch$perEng + 1)/2
-            
+		    per_ratio = GetRatio(d, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
+			per_match <- (fmatch$perEng + 1)/2
+	
+		    aa <- per_ratio + lambda * per_match
+			
             ws <- aa/sqrt(sum(aa^2))
             objective <- -sum(ws * aa)
             obj0 <- -sum(ws * aa)
@@ -39,6 +42,8 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
         } else {
             ADMMobject <- UpdateWsADMM_m(d, Cs, ws, currentY = currentY, groupInfo, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust)
             ws <- ADMMobject$z
+			per_ratio <- ADMMobject$per_ratio
+			per_match <- ADMMobject$per_match
             # print(sum(ws != 0))
             currentY <- ADMMobject$currentY
             # print(ADMMobject$objective)
@@ -48,9 +53,11 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             
             Cs_match <- ADMMobject$Cs
         }
+		sum(ws)
+		
     }
     
-    res <- list(ws = ws, Cs = Cs_match, obj0 = obj0, objective = objective, groupInfo = groupInfo)
+    res <- list(ws = ws, Cs = Cs_match, obj0 = obj0, objective = objective, groupInfo = groupInfo, per_ratio=per_ratio, per_match=per_match)
     return(res)
 }
 
@@ -58,8 +65,10 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
 UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda, sampleSizeAdjust = FALSE) {
     
     fmatch = patternMatch(d, Cs, ws, silence = silence)
-    ratio = GetRatio(d, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
-    aa <- ratio + lambda * (fmatch$perEng + 1)/2
+    per_ratio = GetRatio(d, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
+	per_match <- (fmatch$perEng + 1)/2
+	
+    aa <- per_ratio + lambda * per_match
     
     J <- groupInfo$J
     L <- groupInfo$L
@@ -99,6 +108,9 @@ UpdateWsADMM_m <- function(d, Cs, ws, currentY = NULL, groupInfo, tss.x, lambda,
     ADMMobj$obj0 <- -sum(ws * aa)
     ADMMobj$Cs = fmatch$matchCs
     
+	ADMMobj$per_ratio <- per_ratio
+	ADMMobj$per_match <- per_match
+	
     return(ADMMobj)
 }
 
@@ -197,6 +209,3 @@ prepareGroup <- function(group, J, G0, gamma, alpha, ws) {
         gamma = gamma)
     return(groupInfo)
 }
-
-
-
