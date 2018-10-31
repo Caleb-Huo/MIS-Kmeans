@@ -154,7 +154,7 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
 	            cat("MISKmeans: using defined groups\n")
 			}
             groupInfo <- penaltyInfo[[i]]
-            ADMMobject <- updateMISKmeans(d, K, groupInfo, Cs, wsPre, tss.x, sampleSizeAdjust = sampleSizeAdjust, silent=silent)
+            ADMMobject <- updateMISKmeans(d, K, groupInfo, Cs, wsPre, tss.x, lambda, sampleSizeAdjust = sampleSizeAdjust, silent=silent)
         }
         out[[i]] <- ADMMobject
     }
@@ -173,9 +173,10 @@ MISKmeans <- function(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5, grou
 
 if(F){
 	## for debug purpose
-	#d
+	#d=ad
 	K = 3
 	agamma = 1.07
+	gamma=gammas
 	lambda = 0.5
 	alpha = 0.5
 	group=groupInfo
