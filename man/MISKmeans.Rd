@@ -10,7 +10,7 @@ MISKmeans(d, K = NULL, gamma = NULL, lambda = 0.5, alpha = 0.5,
   sampleSizeAdjust = FALSE)
 }
 \arguments{
-\item{d}{combined data matrix n*J, where n is number of subjects, J=J1+J2+... and J1 is number of features in omics dataset 1 and J2 is number of features in omics dataset 2...}
+\item{d}{A list of S studies, each study is a combined data matrix n*J, where n is number of subjects, J=J1+J2+... and J1 is number of features in omics dataset 1 and J2 is number of features in omics dataset 2...}
 
 \item{K}{number of clusters}
 

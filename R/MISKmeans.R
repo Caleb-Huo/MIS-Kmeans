@@ -2,7 +2,7 @@
 ##'
 ##' Meta-analytic multi-level omics data integration with incorporation of prior group structure
 ##' @title MISKmeans
-##' @param d combined data matrix n*J, where n is number of subjects, J=J1+J2+... and J1 is number of features in omics dataset 1 and J2 is number of features in omics dataset 2...
+##' @param d A list of S studies, each study is a combined data matrix n*J, where n is number of subjects, J=J1+J2+... and J1 is number of features in omics dataset 1 and J2 is number of features in omics dataset 2...
 ##' @param K number of clusters
 ##' @param gamma Penalty on total number of features. Larger gamma will yeild small number of selected features.
 ##' @param lambda A tuning parameter controlling the balance between separation ability (BCSS/TSS) and matching function. lambda is set to be 0.5 by default.

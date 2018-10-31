@@ -8,13 +8,13 @@ gapStatistics(d, K = 3, B = 10, gamma = NULL, alpha = 1, group = NULL,
   seed = 15213, silence = FALSE)
 }
 \arguments{
-\item{d}{combined data matrix n*J, where n is number of subjects, J=J1+J2+... and J1 is number of features in omics dataset 1 and J2 is number of features in omics dataset 2...}
+\item{d}{A list of S studies, each study is a combined data matrix n*J, where n is number of subjects, J=J1+J2+... and J1 is number of features in omics dataset 1 and J2 is number of features in omics dataset 2...}
 
 \item{K}{number of clusters}
 
 \item{B}{number of permutations.}
 
-\item{gamma}{Penalty on total number of features. Larger gamma will yeild small number of selected features.}
+\item{gamma}{Penalty on total number of features. Default is given. Larger gamma will yeild small number of selected features.}
 
 \item{alpha}{balance between group sparsity and individual sparsity. alpha=1 yeilds no group sparsity. alpha=0 yeilds no individual penalty.}
 
@@ -40,30 +40,34 @@ gap statistics to tune gamma
 gap statistics to tune gamma, the tuning parameter to control number of features.
 }
 \examples{
-set.seed(123)
 
-# Generate two random omics datasets
-mu <- c(-3,1,3)
-Simu1_mRNA <- rbind(cbind(matrix(rnorm(40*5, mu[1], 0.1),40,5),
-                          matrix(rnorm(40*5, mu[2], 0.1),40,5),
-                          matrix(rnorm(40*5, mu[3], 0.1),40,5)),
-                    matrix(rnorm(10*15,0,0.1),10,15))
+S <- 2
+K <- 3
+G <- 1000
+g1 <- 50
+g2 <- 50
+n0 <- 20
+n <- K*n0
+labels <- cut(1:n,breaks=K,labels=FALSE)
 
-mu <- c(1,3,-3)
-Simu1_methyl <- rbind(cbind(matrix(rnorm(40*5, mu[1], 0.1),40,5),
-                            matrix(rnorm(40*5, mu[2], 0.1),40,5),
-                            matrix(rnorm(40*5, mu[3], 0.1),40,5)),
-                      matrix(rnorm(10*15,0,0.1),10,15))
+set.seed(32611)
+S1 <- matrix(rnorm(G*n), nrow=G, ncol=n)
+S2 <- matrix(rnorm(G*n), nrow=G, ncol=n)
 
-## feature modules across two datasets
-group <- list(c(1:10,51:60), c(11:20,61:70), c(21:30,71:80), c(31:40,81:90))
+S1[1:g1, labels==1] <- S1[1:g1, labels==1] + 2
+S1[1:g1, labels==3] <- S1[1:g1, labels==3] - 2
+S1[g1 + 1:g2, labels==1] <- S1[g1 + 1:g2, labels==1] - 2
+S1[g1 + 1:g2, labels==2] <- S1[g1 + 1:g2, labels==2] + 2
 
-DList <- rbind(Simu1_mRNA, Simu1_methyl)
-dim(DList)
+S2[1:g1, labels==2] <- S2[1:g1, labels==2] + 2
+S2[1:g1, labels==1] <- S2[1:g1, labels==1] - 2
+S2[g1 + 1:g2, labels==2] <- S2[g1 + 1:g2, labels==2] - 2
+S2[g1 + 1:g2, labels==3] <- S2[g1 + 1:g2, labels==3] + 2
 
-d <- t(DList)
+S = list(t(S1),t(S2))
+groups <- Map('c',1:g1,g1 + 1:g2)
 
-gapResult <- gapStatistics(d,K=3,B=10,group=group)
+gapResult <- gapStatistics(d=S,K=3,B=10,group=group)
 print(gapResult)
 }
 \author{
