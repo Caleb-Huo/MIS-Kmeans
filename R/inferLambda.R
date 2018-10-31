@@ -40,12 +40,6 @@
 ##' inferLambda(res) 
 ##' 
 inferLambda <- function(resMISKmeans, balance=1/2){
-	if(names(resMISKmeans)[1]=="ws" & length(resMISKmeans) == 7){
-		lambdas <- sum(resMISKmeans$ws * resMISKmeans$per_ratio)/sum(resMISKmeans$ws * resMISKmeans$per_match)/2
-	} else {
-		lambdas <- sapply(resMISKmeans, function(x) {
-			sum(x$ws * x$per_ratio)/sum(x$ws * x$per_match) * balance
-		})		
-	}
+	lambdas <- sum(resMISKmeans$ws * resMISKmeans$per_ratio)/sum(resMISKmeans$ws * resMISKmeans$per_match)/2
 	lambdas
 }

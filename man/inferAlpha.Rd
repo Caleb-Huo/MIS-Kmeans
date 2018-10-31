@@ -12,7 +12,7 @@ inferAlpha(resMISKmeans, balance = 1)
 \item{balance}{selecting alpha such that the l1 norm penalty = balance * group penalty}
 }
 \value{
-lambda values
+alpha values
 }
 \description{
 MISKmenas

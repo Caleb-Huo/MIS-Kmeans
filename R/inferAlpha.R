@@ -40,44 +40,23 @@
 ##' inferAlpha(res) 
 ##' 	
 inferAlpha <- function(resMISKmeans, balance=1){
-	if(names(resMISKmeans)[1]=="ws" & length(resMISKmeans) == 7){
-		groupInfo <- resMISKmeans$groupInfo
-		ws <- resMISKmeans$ws
-		alpha <- groupInfo$alpha
-		groupLevel <- groupInfo$groupLevel
-		split_pos <- split(groupInfo$genePos, groupLevel)
-		split_coef <- split(groupInfo$coef, groupLevel)
-		allPenalty_perGroup <- Map(function(x,y){
-			sqrt(sum((ws[x] * y)^2))
-		}, split_pos, split_coef			
-			)
-		allPenalty_combined <- Reduce("+", allPenalty_perGroup)
-		l1Penalty <- groupInfo$alpha * groupInfo$gamma * sum(abs(ws))
-		groupPenalty <- allPenalty_combined - l1Penalty
-		l1Penalty_2 <- l1Penalty/alpha
-		groupPenalty_2 <- groupPenalty/(1-alpha)
-				
-		alphas <- groupPenalty_2*balance/(groupPenalty_2*balance + l1Penalty_2)
-	} else {
-		alphas <- sapply(resMISKmeans, function(xx) {
-			groupInfo <- xx$groupInfo
-			ws <- xx$ws
-			alpha <- groupInfo$alpha
-			groupLevel <- groupInfo$groupLevel
-			split_pos <- split(groupInfo$genePos, groupLevel)
-			split_coef <- split(groupInfo$coef, groupLevel)
-			allPenalty_perGroup <- Map(function(x,y){
-				sqrt(sum((ws[x] * y)^2))
-			}, split_pos, split_coef			
-				)
-			allPenalty_combined <- Reduce("+", allPenalty_perGroup)
-			l1Penalty <- groupInfo$alpha * groupInfo$gamma * sum(abs(ws))				
-			l1Penalty_2 <- l1Penalty/alpha
-			groupPenalty_2 <- groupPenalty/(1-alpha)
-				
-			alphas <- groupPenalty_2*balance/(groupPenalty_2*balance + l1Penalty_2)
-		})		
-	}
+	groupInfo <- resMISKmeans$groupInfo
+	ws <- resMISKmeans$ws
+	alpha <- groupInfo$alpha
+	groupLevel <- groupInfo$groupLevel
+	split_pos <- split(groupInfo$genePos, groupLevel)
+	split_coef <- split(groupInfo$coef, groupLevel)
+	allPenalty_perGroup <- Map(function(x,y){
+		sqrt(sum((ws[x] * y)^2))
+	}, split_pos, split_coef			
+		)
+	allPenalty_combined <- Reduce("+", allPenalty_perGroup)
+	l1Penalty <- groupInfo$alpha * groupInfo$gamma * sum(abs(ws))
+	groupPenalty <- allPenalty_combined - l1Penalty
+	l1Penalty_2 <- l1Penalty/alpha
+	groupPenalty_2 <- groupPenalty/(1-alpha)
+			
+	alphas <- groupPenalty_2*balance/(groupPenalty_2*balance + l1Penalty_2)
 	alphas
 }
 	
