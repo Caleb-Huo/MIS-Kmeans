@@ -67,7 +67,7 @@ S2[g1 + 1:g2, labels==3] <- S2[g1 + 1:g2, labels==3] + 2
 S = list(t(S1),t(S2))
 groups <- Map('c',1:g1,g1 + 1:g2)
 
-gapResult <- gapStatistics(d=S,K=3,B=10,group=group)
+gapResult <- gapStatistics(d=S,K=3,B=10,group=groups)
 print(gapResult)
 }
 \author{
