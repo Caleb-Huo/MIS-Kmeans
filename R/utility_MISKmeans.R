@@ -15,6 +15,9 @@ updateMISKmeans <- function(d, K, groupInfo, Cs, ws, tss.x, lambda, sampleSizeAd
             objective <- 0
             obj0 <- 0
 			Cs_match <- Cs
+            fmatch = patternMatch(d, Cs, ws, silence = silence)
+		    per_ratio = GetRatio(d, Cs, tss.x, sampleSizeAdjust = sampleSizeAdjust)
+			per_match <- (fmatch$perEng + 1)/2
             break
         }
         if (!silent) 
