@@ -175,7 +175,7 @@ if(F){
 	## for debug purpose
 	#d=ad
 	K = 3
-	agamma = 1.07
+	agamma = 0.7
 	gamma=gammas
 	lambda = 0.5
 	alpha = 0.5

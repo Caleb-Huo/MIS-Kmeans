@@ -72,6 +72,12 @@ listLength <- function(alist) {
 eng_MCC_pair <- function(corS1, corS2, reduCs1, reduCs2) {
     K1 = length(reduCs1)
     K2 = length(reduCs2)
+	if(is.null(dim(corS1$MeanInd))){
+		corS1$MeanInd <- matrix(corS1$MeanInd,ncol=1)
+	}
+	if(is.null(dim(corS2$MeanInd))){
+		corS2$MeanInd <- matrix(corS2$MeanInd,ncol=1)
+	}
     p = ncol(corS1$MeanInd)
     m = K1
     EXY = numeric(p)
