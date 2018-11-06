@@ -39,7 +39,7 @@
 ##' 
 ##' inferLambda(res) 
 ##' 
-inferLambda <- function(resMISKmeans, balance=1/2){
+inferLambda <- function(resMISKmeans, balance=1){
 	lambdas <- sum(resMISKmeans$ws * resMISKmeans$per_ratio)/sum(resMISKmeans$ws * resMISKmeans$per_match)*balance
 	lambdas
 }
